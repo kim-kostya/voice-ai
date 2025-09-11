@@ -1,3 +1,3 @@
-export async function GET(req: Request) {
-    return new Response(new Date().toISOString());
+export async function GET() {
+  return new Response(new Date().toISOString());
 }
