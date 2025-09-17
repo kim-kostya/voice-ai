@@ -1,0 +1,7 @@
+# Root EditorConfig
+root = true
+
+# Match Biome formatter: indentStyle=space, indentWidth=2
+[*]
+indent_style = space
+indent_size = 2
