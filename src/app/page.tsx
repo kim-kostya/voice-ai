@@ -106,6 +106,7 @@ export default function Home() {
             <div className="flex items-center justify-center space-x-1 h-12">
               {[...Array(5)].map((_, i) => (
                 <div
+                  // biome-ignore lint/suspicious/noArrayIndexKey: its hardcoded array
                   key={i}
                   className="w-1 bg-accent wave-bar rounded-full"
                   style={{ height: "20px" }}
