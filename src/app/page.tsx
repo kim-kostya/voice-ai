@@ -1,34 +1,36 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Mic, MicOff, HelpCircle, Volume2 } from "lucide-react"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Mic, MicOff, HelpCircle, Volume2 } from "lucide-react";
 
 export default function Home() {
-  const [isListening, setIsListening] = useState(false)
-  const [isSpeaking, setIsSpeaking] = useState(false)
-  const [showHelp, setShowHelp] = useState(false)
-  const [volume, setVolume] = useState(75)
+  const [isListening, setIsListening] = useState(false);
+  const [isSpeaking, setIsSpeaking] = useState(false);
+  const [showHelp, setShowHelp] = useState(false);
+  const [volume, setVolume] = useState(75);
 
   const toggleListening = () => {
-    setIsListening(!isListening)
+    setIsListening(!isListening);
     if (!isListening) {
       // Simulate listening for 3 seconds then speaking
       setTimeout(() => {
-        setIsListening(false)
-        setIsSpeaking(true)
-        setTimeout(() => setIsSpeaking(false), 2000)
-      }, 3000)
+        setIsListening(false);
+        setIsSpeaking(true);
+        setTimeout(() => setIsSpeaking(false), 2000);
+      }, 3000);
     }
-  }
+  };
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
       {/* Header */}
       <header className="bg-card px-6 py-4 border-b border-border">
         <div className="max-w-4xl mx-auto flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-card-foreground font-serif">Voice AI</h1>
+          <h1 className="text-2xl font-bold text-card-foreground font-serif">
+            Voice AI
+          </h1>
           <Button
             variant="ghost"
             size="sm"
@@ -64,7 +66,11 @@ export default function Home() {
           {/* Status Text */}
           <div className="space-y-2">
             <h2 className="text-xl font-medium text-foreground">
-              {isListening ? "Listening..." : isSpeaking ? "Speaking..." : "Ready to chat"}
+              {isListening
+                ? "Listening..."
+                : isSpeaking
+                  ? "Speaking..."
+                  : "Ready to chat"}
             </h2>
             <p className="text-muted-foreground text-sm">
               {isListening
@@ -99,7 +105,11 @@ export default function Home() {
           {isSpeaking && (
             <div className="flex items-center justify-center space-x-1 h-12">
               {[...Array(5)].map((_, i) => (
-                <div key={i} className="w-1 bg-accent wave-bar rounded-full" style={{ height: "20px" }} />
+                <div
+                  key={i}
+                  className="w-1 bg-accent wave-bar rounded-full"
+                  style={{ height: "20px" }}
+                />
               ))}
             </div>
           )}
@@ -154,5 +164,5 @@ export default function Home() {
         </div>
       </main>
     </div>
-  )
+  );
 }
