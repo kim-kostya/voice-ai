@@ -1,9 +1,9 @@
 "use client";
 
+import { HelpCircle, Mic, MicOff, Volume2 } from "lucide-react";
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { Mic, MicOff, HelpCircle, Volume2 } from "lucide-react";
 
 export default function Home() {
   const [isListening, setIsListening] = useState(false);
