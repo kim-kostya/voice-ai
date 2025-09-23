@@ -1,9 +1,13 @@
-'use client';
+"use client";
 
-import { trpc } from '@/lib/trpc';
+import { trpc } from "@/lib/trpc";
 
 export default function Home() {
-  const { data: helloData, isLoading, error } = trpc.example.hello.useQuery({ text: 'Client' });
+  const {
+    data: helloData,
+    isLoading,
+    error,
+  } = trpc.example.hello.useQuery({ text: "Client" });
 
   if (isLoading) {
     return <div>Loading...</div>;

@@ -1,13 +1,17 @@
-'use client';
+"use client";
 
-import type React from 'react';
-import { useState } from 'react';
-import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { httpBatchLink, loggerLink } from '@trpc/client';
-import superjson from 'superjson';
-import { trpc, getUrl } from '@/lib/trpc';
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { httpBatchLink, loggerLink } from "@trpc/client";
+import type React from "react";
+import { useState } from "react";
+import superjson from "superjson";
+import { getUrl, trpc } from "@/lib/trpc";
 
-export default function TRPCProvider({ children }: { children: React.ReactNode }) {
+export default function TRPCProvider({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
   const [queryClient] = useState(
     () =>
       new QueryClient({
@@ -24,8 +28,8 @@ export default function TRPCProvider({ children }: { children: React.ReactNode }
       links: [
         loggerLink({
           enabled: (opts) =>
-            process.env.NODE_ENV === 'development' ||
-            (opts.direction === 'down' && opts.result instanceof Error),
+            process.env.NODE_ENV === "development" ||
+            (opts.direction === "down" && opts.result instanceof Error),
         }),
         httpBatchLink({
           url: getUrl(),
@@ -33,7 +37,7 @@ export default function TRPCProvider({ children }: { children: React.ReactNode }
           fetch: async (input, init?) => {
             return fetch(input, {
               ...init,
-              credentials: 'include', // Include cookies in requests for auth
+              credentials: "include", // Include cookies in requests for auth
             });
           },
           transformer: superjson,
