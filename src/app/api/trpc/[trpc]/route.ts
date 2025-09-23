@@ -1,7 +1,7 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
 import { appRouter } from "@/server";
-import { createContext } from "@/server/trpc";
 import { limitByIp } from "@/server/ratelimit";
+import { createContext } from "@/server/trpc";
 
 function getClientIp(req: Request): string {
   const headers = req.headers;
@@ -32,9 +32,15 @@ const handler = async (req: Request) => {
   try {
     const rl = await limitByIp(ip);
     if (!rl.success) {
-      const retryAfterSec = Math.max(0, Math.ceil((rl.reset - Date.now()) / 1000));
+      const retryAfterSec = Math.max(
+        0,
+        Math.ceil((rl.reset - Date.now()) / 1000),
+      );
       return new Response(
-        JSON.stringify({ error: "Too Many Requests", message: "Rate limit exceeded" }),
+        JSON.stringify({
+          error: "Too Many Requests",
+          message: "Rate limit exceeded",
+        }),
         {
           status: 429,
           headers: {
@@ -63,7 +69,10 @@ const handler = async (req: Request) => {
     // Attach rate limit headers for visibility
     try {
       res.headers.set("X-RateLimit-Limit", String(rl.limit));
-      res.headers.set("X-RateLimit-Remaining", String(Math.max(0, rl.remaining)));
+      res.headers.set(
+        "X-RateLimit-Remaining",
+        String(Math.max(0, rl.remaining)),
+      );
       res.headers.set("X-RateLimit-Reset", String(rl.reset));
     } catch {}
 
