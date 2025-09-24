@@ -2,7 +2,7 @@
 
 import { trpc } from "@/lib/trpc";
 
-export default function Home() {
+export default function TestPage() {
   const {
     data: helloData,
     isLoading,

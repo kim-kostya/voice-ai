@@ -20,6 +20,23 @@ You can start editing the page by modifying `app/page.tsx`. The page auto-update
 
 This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
 
+## Rate Limiting (Upstash Redis)
+
+This project enforces a simple IP-based rate limit on all tRPC API requests using Upstash Redis.
+
+Configuration:
+- Set the following environment variables (e.g. in .env):
+  - UPSTASH_REDIS_REST_URL
+  - UPSTASH_REDIS_REST_TOKEN
+
+Defaults:
+- Sliding window: 60 requests per 10 minutes per IP.
+- You can adjust this in src/server/ratelimit.ts.
+
+Behavior:
+- When the limit is exceeded, the API responds with HTTP 429 and headers:
+  - Retry-After, X-RateLimit-Limit, X-RateLimit-Remaining, X-RateLimit-Reset
+
 ## Learn More
 
 To learn more about Next.js, take a look at the following resources:
