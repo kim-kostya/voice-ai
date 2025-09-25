@@ -1,0 +1,29 @@
+name: agent-deploy.yml
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'agent/**'
+
+
+jobs:
+  lint:
+    name: Biome Lint
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Deploy LiveKit Cloud Agent
+        uses: livekit/deploy-action@main
+        env:
+          LIVEKIT_URL: ${{ secrets.LIVEKIT_URL }}
+          LIVEKIT_API_KEY: ${{ secrets.LIVEKIT_API_KEY }}
+          LIVEKIT_API_SECRET: ${{ secrets.LIVEKIT_API_SECRET }}
+          SECRET_LIST: ${{ secrets.LIVEKIT_SECRET_LIST }}
+        with:
+          OPERATION: deploy
+          WORKING_DIRECTORY: test-agent
