@@ -10,7 +10,7 @@ on:
 
 jobs:
   lint:
-    name: Biome Lint
+    name: LiveKit Agent Deploy
     runs-on: ubuntu-latest
 
     steps:
