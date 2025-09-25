@@ -1,9 +1,24 @@
 name: Lint on pull requests
 
 on:
+  push:
+    paths:
+      - 'src/**'
+      - 'biome.json'
+      - 'package.json'
+      - 'next.config.ts'
+      - 'tsconfig.json'
+      - 'postcss.config.mjs'
   pull_request:
     branches:
       - main
+    paths:
+      - 'src/**'
+      - 'biome.json'
+      - 'package.json'
+      - 'next.config.ts'
+      - 'tsconfig.json'
+      - 'postcss.config.mjs'
 
 jobs:
   lint:
