@@ -26,4 +26,4 @@ jobs:
           SECRET_LIST: ${{ secrets.LIVEKIT_SECRET_LIST }}
         with:
           OPERATION: deploy
-          WORKING_DIRECTORY: test-agent
+          WORKING_DIRECTORY: agent/
