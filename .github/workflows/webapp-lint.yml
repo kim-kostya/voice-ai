@@ -1,4 +1,4 @@
-name: Lint on pull requests
+name: Webapp lint
 
 on:
   push:
