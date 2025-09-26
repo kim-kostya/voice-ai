@@ -12,6 +12,8 @@ from livekit.agents import (
 )
 
 from livekit.plugins import openai
+from livekit.plugins import assemblyai
+from livekit.plugins import elevenlabs
 
 load_dotenv()
 
@@ -22,10 +24,12 @@ class DevAgent(Agent):
   def __init__(self):
     super().__init__(
       instructions="You are in-development AI agent called Marin.",
-      llm=openai.realtime.RealtimeModel(
-        voice="marin",
-        base_url="https://openrouter.ai/api/v1"
+      stt=assemblyai.STT(),
+      llm=openai.llm.LLM(
+        base_url="https://openrouter.ai/api/v1",
+        model="google/gemini-2.5-flash"
       ),
+      tts=elevenlabs.TTS()
     )
 
 
