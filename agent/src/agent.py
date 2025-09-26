@@ -1,38 +1,32 @@
 import logging
 
 from dotenv import load_dotenv
-
 from livekit.agents import (
   Agent,
   AgentSession,
   AutoSubscribe,
   JobContext,
   RoomOutputOptions,
-  StopResponse,
   WorkerOptions,
   cli,
-  llm,
 )
-from livekit.plugins import assemblyai
+
+from livekit.plugins import openai
 
 load_dotenv()
 
 logger = logging.getLogger("transcriber")
 
 
-class Transcriber(Agent):
+class DevAgent(Agent):
   def __init__(self):
     super().__init__(
-      instructions="not-needed",
-      stt=assemblyai.STT(),
+      instructions="You are in-development AI agent called Marin.",
+      llm=openai.realtime.RealtimeModel(
+        voice="marin",
+        base_url="https://openrouter.ai/api/v1"
+      ),
     )
-
-  async def on_user_turn_completed(self, chat_ctx: llm.ChatContext, new_message: llm.ChatMessage):
-    user_transcript = new_message.text_content
-    logger.info(f" -> {user_transcript}")
-
-    # Needed to stop the agent's default conversational loop
-    raise StopResponse()
 
 
 async def entrypoint(ctx: JobContext):
@@ -42,7 +36,7 @@ async def entrypoint(ctx: JobContext):
   session = AgentSession()
 
   await session.start(
-    agent=Transcriber(),
+    agent=DevAgent(),
     room=ctx.room,
     room_output_options=RoomOutputOptions(
       # If you don't want to send the transcription back to the room, set this to False
