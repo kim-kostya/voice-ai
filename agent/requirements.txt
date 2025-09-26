@@ -1,3 +1,0 @@
-livekit-agents~=1.2
-livekit-plugins-assemblyai~=1.2
-python-dotenv
