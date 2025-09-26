@@ -1,27 +1,14 @@
 "use client";
 
-import { HelpCircle, Mic, MicOff, Volume2 } from "lucide-react";
-import { useState } from "react";
+import { HelpCircle, Mic } from "lucide-react";
+import { Suspense, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { VoiceAIAgentContainer } from "@/components/VoiceAIAgentContainer";
 
 export default function Home() {
-  const [isListening, setIsListening] = useState(false);
-  const [isSpeaking, setIsSpeaking] = useState(false);
   const [showHelp, setShowHelp] = useState(false);
-  const [volume, setVolume] = useState(75);
-
-  const toggleListening = () => {
-    setIsListening(!isListening);
-    if (!isListening) {
-      // Simulate listening for 3 seconds then speaking
-      setTimeout(() => {
-        setIsListening(false);
-        setIsSpeaking(true);
-        setTimeout(() => setIsSpeaking(false), 2000);
-      }, 3000);
-    }
-  };
+  const [isAgentStarted, setAgentStarted] = useState(false);
 
   return (
     <div className="min-h-screen bg-background flex flex-col">
@@ -62,107 +49,19 @@ export default function Home() {
 
       {/* Main Content */}
       <main className="flex-1 flex items-center justify-center p-6">
-        <div className="max-w-md w-full space-y-8 text-center">
-          {/* Status Text */}
-          <div className="space-y-2">
-            <h2 className="text-xl font-medium text-foreground">
-              {isListening
-                ? "Listening..."
-                : isSpeaking
-                  ? "Speaking..."
-                  : "Ready to chat"}
-            </h2>
-            <p className="text-muted-foreground text-sm">
-              {isListening
-                ? "I'm listening to your voice"
-                : isSpeaking
-                  ? "Let me respond to that"
-                  : "Click the microphone to start"}
-            </p>
-          </div>
-
-          {/* Microphone Button */}
-          <div className="relative">
-            <Button
-              onClick={toggleListening}
-              size="lg"
-              className={`
-                w-24 h-24 rounded-full bg-gradient-to-br from-primary to-secondary
-                hover:scale-105 transition-all duration-200 shadow-lg
-                ${isListening ? "pulse-listening" : ""}
-                ${isSpeaking ? "bg-accent" : ""}
-              `}
-            >
-              {isListening ? (
-                <Mic className="w-8 h-8 text-primary-foreground" />
-              ) : (
-                <MicOff className="w-8 h-8 text-primary-foreground" />
-              )}
-            </Button>
-          </div>
-
-          {/* Audio Waveform Visualization */}
-          {isSpeaking && (
-            <div className="flex items-center justify-center space-x-1 h-12">
-              {[...Array(5)].map((_, i) => (
-                <div
-                  // biome-ignore lint/suspicious/noArrayIndexKey: its hardcoded array
-                  key={i}
-                  className="w-1 bg-accent wave-bar rounded-full"
-                  style={{ height: "20px" }}
-                />
-              ))}
-            </div>
-          )}
-
-          {/* Volume Control */}
-          <div className="space-y-3">
-            <div className="flex items-center justify-center space-x-3">
-              <Volume2 className="w-4 h-4 text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">Volume</span>
-            </div>
-            <div className="relative">
-              <input
-                type="range"
-                min="0"
-                max="100"
-                value={volume}
-                onChange={(e) => setVolume(Number(e.target.value))}
-                className="w-full h-2 bg-muted rounded-lg appearance-none cursor-pointer slider"
-                style={{
-                  background: `linear-gradient(to right, rgb(22, 78, 99) 0%, rgb(22, 78, 99) ${volume}%, rgb(241, 245, 249) ${volume}%, rgb(241, 245, 249) 100%)`,
-                }}
-              />
-              <style jsx>{`
-                .slider::-webkit-slider-thumb {
-                  appearance: none;
-                  width: 20px;
-                  height: 20px;
-                  border-radius: 50%;
-                  background: rgb(22, 78, 99);
-                  cursor: pointer;
-                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                }
-                .slider::-moz-range-thumb {
-                  width: 20px;
-                  height: 20px;
-                  border-radius: 50%;
-                  background: rgb(22, 78, 99);
-                  cursor: pointer;
-                  border: none;
-                  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-                }
-              `}</style>
-            </div>
-            <div className="text-xs text-muted-foreground">{volume}%</div>
-          </div>
-
-          {/* Connection Status */}
-          <div className="flex items-center justify-center space-x-2 text-xs text-muted-foreground">
-            <div className="w-2 h-2 bg-secondary rounded-full animate-pulse" />
-            <span>Connected</span>
-          </div>
-        </div>
+        {isAgentStarted ? (
+          <Suspense fallback={<div>Loading...</div>}>
+            <VoiceAIAgentContainer />
+          </Suspense>
+        ) : (
+          <button
+            onClick={() => setAgentStarted(true)}
+            className="h-16 w-16 rounded-full bg-primary hover:bg-primary/90 text-primary-foreground shadow-lg flex items-center justify-center transition-all duration-200 hover:scale-105"
+            type="button"
+          >
+            <Mic className="h-8 w-8" />
+          </button>
+        )}
       </main>
     </div>
   );
