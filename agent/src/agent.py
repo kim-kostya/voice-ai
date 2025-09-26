@@ -29,7 +29,10 @@ class DevAgent(Agent):
         base_url="https://openrouter.ai/api/v1",
         model="google/gemini-2.5-flash"
       ),
-      tts=elevenlabs.TTS()
+      tts=elevenlabs.TTS(
+        voice_id="ODq5zmih8GrVes37Dizd",
+        model="eleven_multilingual_v2"
+      )
     )
 
 
@@ -45,7 +48,7 @@ async def entrypoint(ctx: JobContext):
     room_output_options=RoomOutputOptions(
       # If you don't want to send the transcription back to the room, set this to False
       transcription_enabled=True,
-      audio_enabled=False,
+      audio_enabled=True,
     ),
   )
 
