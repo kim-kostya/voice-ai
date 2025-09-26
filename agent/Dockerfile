@@ -41,11 +41,12 @@ RUN apt-get update && apt-get install -y \
 WORKDIR /app
 
 # Copy just the dependency files first, for more efficient layer caching
-COPY requirements.txt ./
+COPY pyproject.toml uv.lock ./
+RUN mkdir -p src
 
 # Install Python dependencies using pip
 # --no-cache-dir ensures we don't use the system cache
-RUN pip install --no-cache-dir -r requirements.txt
+RUN uv sync --locked
 
 # Copy all remaining pplication files into the container
 # This includes source code, configuration files, and dependency specifications
@@ -67,4 +68,4 @@ RUN python "main.py" download-files
 
 # Run the application
 # The "start" command tells the worker to connect to LiveKit and begin waiting for jobs.
-CMD ["python", "main.py", "start"]
+CMD ["python", "src/agent.py", "start"]
