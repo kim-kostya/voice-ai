@@ -37,7 +37,7 @@ class DevAgent(Agent):
 
 
 async def entrypoint(ctx: JobContext):
-  logger.info(f"starting transcriber (speech to text) example, room: {ctx.room.name}")
+  logger.info(f"starting dev agent (speech to text) example, room: {ctx.room.name}")
   await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
 
   session = AgentSession()
