@@ -6,7 +6,6 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
   "livekit~=1.0",
-  "livekit-agents~=1.2",
-  "livekit-plugins-assemblyai~=1.2",
-  "python-dotenv"
+  "livekit-agents[assemblyai,elevenlabs,openai]~=1.2",
+  "python-dotenv",
 ]
