@@ -16,6 +16,7 @@
     "@hookform/resolvers": "^3.10.0",
     "@libsql/client": "^0.15.15",
     "@livekit/components-react": "^2.9.15",
+    "@livekit/components-core": "^0.12.9",
     "@livekit/components-styles": "^1.1.6",
     "@radix-ui/react-accordion": "1.2.2",
     "@radix-ui/react-alert-dialog": "1.1.4",
