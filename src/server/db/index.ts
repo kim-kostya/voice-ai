@@ -9,7 +9,7 @@ if (!process.env.DATABASE_AUTH_TOKEN) {
   throw new Error("DATABASE_AUTH_TOKEN is not defined");
 }
 
-const db = drizzle({
+export const db = drizzle({
   connection: {
     url: process.env.DATABASE_URL,
     authToken: process.env.DATABASE_AUTH_TOKEN,
