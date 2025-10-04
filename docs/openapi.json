@@ -1,0 +1,42 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "version": "0.0.0",
+    "title": "VoiceAI"
+  },
+  "paths": {
+    "/health": {
+      "get": {
+        "responses": {
+          "200": {
+            "description": "Returns current UTC time in ISO format"
+          }
+        },
+        "summary": "Health check endpoint"
+      }
+    },
+    "/api/trpc": {
+      "post": {
+        "summary": "TRPc Route (Internal call only)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          },
+          "429": {
+            "description": "Rate limit reached" 
+          }
+        }
+      }
+    },
+    "/api/reminders/check": {
+      "post": {
+        "summary": "CRON route for remindedrs (Internal call only)",
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    }
+  }
+}
