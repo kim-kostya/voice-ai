@@ -105,7 +105,7 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 
 - [System Maps (L1 + L2)](https://docs.google.com/document/d/121FQGUCzSIYmAcyWfeq_F5QPpDdYMGm5aEYwHfKUrp4/edit?usp=sharing)  
 - [Data Model](https://docs.google.com/document/d/1wh0MApUxmwA-WRKEe4LjJ5kPOvd7w4W80MvwFNkq04Q/edit?usp=sharing)  
-- [OpenAPI Spec](/api/openapi.yaml)  
+- [OpenAPI Spec](https://github.com/kim-kostya/voice-ai/pull/35/commits/62b2e17f6ec964755c377813a657f37de53ddf5d)  
 - [Flows & Wireframes](https://docs.google.com/document/d/1NqTkIoExfeHdQQzjwcs6-yYCCd-fcqBDczxfK6bXvYw/edit?usp=sharing)  
 - [Code Standards](https://docs.google.com/document/d/1LfRK4KX2-sKMGjIbWGpKZFOwAGUFge61TwbLkkrzzSc/edit?usp=sharing)  
 - [Risk Log](https://docs.google.com/document/d/1bEqYm4al8r5vGDpxX-hkITwb0lO48-6fnfomyd1CcaI/edit?usp=sharing)
