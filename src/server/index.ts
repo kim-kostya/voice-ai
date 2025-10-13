@@ -1,10 +1,14 @@
+import { remindersRouter } from "@/server/routers/reminders";
 import { roomsRouter } from "@/server/routers/rooms";
-import { exampleRouter } from "@/server/routers/test";
 import { createTRPCRouter } from "@/server/trpc";
 
+export type User = {
+  id: string;
+};
+
 export const appRouter = createTRPCRouter({
-  example: exampleRouter,
   rooms: roomsRouter,
+  reminders: remindersRouter,
 });
 
 export type AppRouter = typeof appRouter;

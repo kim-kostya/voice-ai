@@ -1,5 +1,9 @@
 import { fetchRequestHandler } from "@trpc/server/adapters/fetch";
-import { appRouter } from "@/server";
+import { eq } from "drizzle-orm";
+import { cookies } from "next/headers";
+import { appRouter, type User } from "@/server";
+import { db } from "@/server/db";
+import { users } from "@/server/db/schema";
 import { limitByIp } from "@/server/ratelimit";
 import { createContext } from "@/server/trpc";
 
@@ -27,8 +31,35 @@ function getClientIp(req: Request): string {
   return headers.get("user-agent") ?? "unknown";
 }
 
+async function getUser(): Promise<User> {
+  const requestCookies = await cookies();
+
+  const userIdentifier = requestCookies.get("userId")?.value;
+
+  if (!userIdentifier) {
+    throw new Error("UserId is not set.");
+  }
+
+  const userDbResult = await db
+    .select()
+    .from(users)
+    .where(eq(users.id, userIdentifier))
+    .limit(1)
+    .execute();
+
+  if (userDbResult.length === 0) {
+    await db.insert(users).values({ id: userIdentifier }).execute();
+  }
+
+  return {
+    id: userIdentifier,
+  };
+}
+
 const handler = async (req: Request) => {
   const ip = getClientIp(req);
+  const user = await getUser();
+
   try {
     const rl = await limitByIp(ip);
     if (!rl.success) {
@@ -59,7 +90,7 @@ const handler = async (req: Request) => {
       req,
       router: appRouter,
       createContext: async () => {
-        return createContext();
+        return createContext(user);
       },
       onError({ error, path }) {
         console.error("tRPC error", { path, error });
@@ -85,7 +116,7 @@ const handler = async (req: Request) => {
       req,
       router: appRouter,
       createContext: async () => {
-        return createContext();
+        return createContext(user);
       },
       onError({ error, path }) {
         console.error("tRPC error", { path, error });
