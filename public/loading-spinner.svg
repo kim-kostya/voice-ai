@@ -1,0 +1,74 @@
+<svg
+        width="512"
+        height="512"
+        viewBox="0 0 512 512"
+        xmlns="http://www.w3.org/2000/svg"
+        xmlns:svg="http://www.w3.org/2000/svg">
+    <style>
+        .loading-spinner-path {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 25;
+            stroke-opacity: 1;
+            stroke-dasharray: 100 1495;
+            stroke-linecap: round;
+            animation: loading-spinner-stroke 6s infinite, loading-spinner-rotation 1.5s infinite linear;
+            transform-origin: 50% 50%;
+        }
+
+        .loading-spinner-path-reverse {
+            fill: none;
+            stroke: currentColor;
+            stroke-width: 25;
+            stroke-opacity: 1;
+            stroke-dasharray: 100 1495;
+            stroke-linecap: round;
+            animation: loading-spinner-stroke 8s infinite reverse, loading-spinner-rotation-90 2s infinite linear reverse;
+            transform-origin: 50% 50%;
+            transform: rotate(-90deg);
+        }
+
+        @keyframes loading-spinner-stroke {
+            0% {
+                stroke-dasharray: 100 1495;
+            }
+            50% {
+                stroke-dasharray: 1200 395;
+            }
+            100% {
+                stroke-dasharray: 100 1495;
+            }
+        }
+
+        @keyframes loading-spinner-rotation {
+            from {
+                transform: rotate(0deg);
+            }
+            to {
+                transform: rotate(-360deg);
+            }
+        }
+
+        @keyframes loading-spinner-rotation-90 {
+            from {
+                transform: rotate(-90deg);
+            }
+            to {
+                transform: rotate(-450deg);
+            }
+        }
+    </style>
+    <g>
+        <circle
+                class="loading-spinner-path"
+                cy="256"
+                cx="256"
+                r="236"/>
+
+        <circle
+                class="loading-spinner-path-reverse"
+                cy="256"
+                cx="256"
+                r="206"/>
+    </g>
+</svg>
