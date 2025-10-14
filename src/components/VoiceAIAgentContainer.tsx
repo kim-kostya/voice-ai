@@ -19,6 +19,7 @@ import { trpc } from "@/lib/trpc";
 
 export function VoiceAIAgentContainer() {
   const trpcUtils = trpc.useUtils();
+  const [roomId, setRoomId] = useState<string | undefined>(undefined);
   const [isRoomConnected, setIsRoomConnected] = useState(false);
   const [isRoomConnecting, setIsRoomConnecting] = useState(false);
   const [roomConnectionError, setRoomConnectionError] = useState<
@@ -37,13 +38,13 @@ export function VoiceAIAgentContainer() {
     try {
       setRoomConnectionError(undefined);
       setIsRoomConnecting(true);
-      let roomId = window.localStorage.getItem("roomId");
-      if (!roomId) {
-        roomId = crypto.randomUUID();
-        window.localStorage.setItem("roomId", roomId);
+      let currentRoomId = roomId;
+      if (!currentRoomId) {
+        currentRoomId = crypto.randomUUID();
+        setRoomId(currentRoomId);
       }
       const roomData = await trpcUtils.rooms.getRoomData.fetch({
-        roomId: roomId,
+        roomId: currentRoomId,
         username: "user",
       });
 
