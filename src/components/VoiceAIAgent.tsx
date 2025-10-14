@@ -1,23 +1,29 @@
 "use client";
 
 import "@livekit/components-styles";
-import { BarVisualizer, useVoiceAssistant } from "@livekit/components-react";
+import { useRoomContext, useVoiceAssistant } from "@livekit/components-react";
+import VoiceButton from "@/components/ui/VoiceButton";
 
 export default function VoiceAIAgent() {
-  const { state, audioTrack, agentTranscriptions } = useVoiceAssistant();
+  const roomContext = useRoomContext();
+  const { state } = useVoiceAssistant();
 
   return (
-    <div className="h-80">
-      <BarVisualizer
-        state={state}
-        barCount={5}
-        trackRef={audioTrack}
-        style={{}}
+    <>
+      <VoiceButton
+        onClick={async () =>
+          await roomContext.localParticipant.setMicrophoneEnabled(
+            !roomContext.localParticipant.isMicrophoneEnabled,
+          )
+        }
+        isDisabled={
+          state === "disconnected" ||
+          state === "connecting" ||
+          state === "initializing"
+        }
+        isMuted={!roomContext.localParticipant.isMicrophoneEnabled}
       />
       <p className="text-center">{state}</p>
-      {agentTranscriptions.map((item) => (
-        <p key={item.id}>{item.text}</p>
-      ))}
-    </div>
+    </>
   );
 }
