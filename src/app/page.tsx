@@ -1,12 +1,9 @@
 "use client";
 
-import { useState } from "react";
 import { Header } from "@/components/ui/Header";
 import { VoiceAIAgentContainer } from "@/components/VoiceAIAgentContainer";
 
 export default function Home() {
-  const [isAgentStarted, setIsAgentStarted] = useState(false);
-
   return (
     <div className="min-h-screen bg-background flex flex-col">
       <Header />

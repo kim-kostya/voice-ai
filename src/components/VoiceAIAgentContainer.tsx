@@ -1,12 +1,6 @@
 "use client";
 
-import { setupStartAudio } from "@livekit/components-core";
-import {
-  BarVisualizer,
-  RoomAudioRenderer,
-  RoomContext,
-  useStartAudio,
-} from "@livekit/components-react";
+import { RoomAudioRenderer, RoomContext } from "@livekit/components-react";
 import { Room } from "livekit-client";
 import { useState } from "react";
 import { useLocalStorage } from "usehooks-ts";
