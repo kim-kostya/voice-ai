@@ -16,6 +16,7 @@ export default function VoiceAIAgent() {
   useEffect(() => {
     if (!roomContext) return;
 
+    console.log("Registering RPC methods");
     roomContext.unregisterRpcMethod("add_reminder");
     roomContext.unregisterRpcMethod("get_reminders");
 
