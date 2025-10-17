@@ -4,32 +4,31 @@
 @custom-variant dark (&:is(.dark *));
 
 :root {
-  /* Updated color tokens to match voice agent design brief */
-  --background: oklch(1 0 0); /* Pure white */
-  --foreground: oklch(0.4 0.02 240); /* Dark grayish blue #475569 */
-  --card: oklch(0.98 0.02 200); /* Light cyan #ecfeff */
-  --card-foreground: oklch(0.3 0.05 200); /* Cyan-800 #164e63 */
-  --popover: oklch(1 0 0); /* White */
-  --popover-foreground: oklch(0.4 0.02 240); /* Dark grayish blue */
-  --primary: oklch(0.3 0.05 200); /* Cyan-800 #164e63 */
-  --primary-foreground: oklch(1 0 0); /* White */
-  --secondary: oklch(0.45 0.15 160); /* Emerald-600 #059669 */
-  --secondary-foreground: oklch(1 0 0); /* White */
-  --muted: oklch(0.96 0.01 240); /* Light gray #f1f5f9 */
-  --muted-foreground: oklch(0.4 0.02 240); /* Dark grayish blue */
-  --accent: oklch(0.55 0.22 25); /* Red-600 #dc2626 */
-  --accent-foreground: oklch(1 0 0); /* White */
-  --destructive: oklch(0.55 0.22 25); /* Red-600 */
-  --destructive-foreground: oklch(1 0 0); /* White */
-  --border: oklch(0.98 0.02 200); /* Light cyan */
-  --input: oklch(1 0 0); /* White */
-  --ring: oklch(0.45 0.15 160); /* Emerald-600 for focus */
-  --chart-1: oklch(0.3 0.05 200); /* Cyan-800 */
-  --chart-2: oklch(0.55 0.22 25); /* Red-600 */
-  --chart-3: oklch(0.45 0.15 160); /* Emerald-600 */
-  --chart-4: oklch(0.4 0.02 240); /* Dark grayish blue */
-  --chart-5: oklch(0.98 0.02 200); /* Light cyan */
-  --radius: 0.5rem; /* Soft corners */
+  --background: oklch(0.99 0 0);
+  --foreground: oklch(0.145 0 0);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: oklch(0.205 0 0);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.205 0 0);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: oklch(0.97 0 0);
+  --accent-foreground: oklch(0.205 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0);
+  --input: oklch(0.922 0 0);
+  --ring: oklch(0.708 0 0);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --radius: 0.625rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -123,51 +122,4 @@
   body {
     @apply bg-background text-foreground;
   }
-}
-
-/* Added custom animations for voice agent states */
-@keyframes pulse-glow {
-  0%,
-  100% {
-    box-shadow: 0 0 20px rgba(5, 150, 105, 0.3);
-    transform: scale(1);
-  }
-  50% {
-    box-shadow: 0 0 40px rgba(5, 150, 105, 0.6);
-    transform: scale(1.05);
-  }
-}
-
-@keyframes wave {
-  0%,
-  100% {
-    height: 20px;
-  }
-  50% {
-    height: 40px;
-  }
-}
-
-.pulse-listening {
-  animation: pulse-glow 2s ease-in-out infinite;
-}
-
-.wave-bar {
-  animation: wave 1s ease-in-out infinite;
-}
-
-.wave-bar:nth-child(2) {
-  animation-delay: 0.1s;
-}
-
-.wave-bar:nth-child(3) {
-  animation-delay: 0.2s;
-}
-
-.wave-bar:nth-child(4) {
-  animation-delay: 0.3s;
-}
-
-.wave-bar:nth-child(5) {
-  animation-delay: 0.4s;
 }

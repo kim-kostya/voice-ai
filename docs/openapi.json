@@ -23,14 +23,14 @@
             "description": "OK"
           },
           "429": {
-            "description": "Rate limit reached" 
+            "description": "Rate limit reached"
           }
         }
       }
     },
     "/api/reminders/check": {
       "post": {
-        "summary": "CRON route for remindedrs (Internal call only)",
+        "summary": "CRON route for reminders (Internal call only)",
         "responses": {
           "200": {
             "description": "OK"
