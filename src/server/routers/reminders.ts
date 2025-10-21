@@ -26,7 +26,7 @@ export const remindersRouter = {
     return result.map((reminder) => ({
       id: reminder.id,
       text: reminder.text,
-      time: reminder.time,
+      time: new Date(reminder.time),
     }));
   }),
   checkReminders: publicProcedure.mutation(() => {}),
