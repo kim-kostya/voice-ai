@@ -2,9 +2,10 @@
 
 import "@livekit/components-styles";
 import { useRoomContext, useVoiceAssistant } from "@livekit/components-react";
-import { useEffect } from "react";
-import SuperJSON from "superjson";
+import { useCallback } from "react";
+import { z } from "zod";
 import VoiceButton from "@/components/ui/VoiceButton";
+import { getLocation, useAgentRpcMethod } from "@/lib/client/utils";
 import { trpc } from "@/lib/trpc";
 
 export default function VoiceAIAgent() {
@@ -13,38 +14,46 @@ export default function VoiceAIAgent() {
   const addReminderMutation = trpc.reminders.addReminder.useMutation();
   const trpcUtils = trpc.useUtils();
 
-  useEffect(() => {
-    if (!roomContext) return;
+  useAgentRpcMethod(
+    "get_reminders",
+    z.object({}),
+    useCallback(async () => {
+      const reminders = await trpcUtils.reminders.getReminders.fetch();
+      return {
+        type: "reminders_with_id",
+        reminders,
+      };
+    }, [trpcUtils]),
+  );
 
-    console.log("Registering RPC methods");
-    roomContext.unregisterRpcMethod("add_reminder");
-    roomContext.unregisterRpcMethod("get_reminders");
+  useAgentRpcMethod(
+    "add_reminder",
+    z.object({
+      text: z.string(),
+      time: z.date(),
+    }),
+    async (data) => {
+      await addReminderMutation.mutateAsync({
+        text: data.text,
+        time: data.time,
+      });
+      return {
+        type: "success",
+      };
+    },
+  );
 
-    roomContext.registerRpcMethod("add_reminder", async (data) => {
-      try {
-        const request = SuperJSON.parse(data.payload) as {
-          text: string;
-          time: Date;
-        };
-        await addReminderMutation.mutateAsync(request);
-        return "Reminder added successfully";
-      } catch (error) {
-        console.error("Error adding reminder:", error);
-        return "Failed to add reminder";
-      }
-    });
-
-    roomContext.registerRpcMethod("get_reminders", async () => {
-      try {
-        return SuperJSON.stringify(
-          await trpcUtils.reminders.getReminders.fetch(),
-        );
-      } catch (error) {
-        console.error("Error getting reminders:", error);
-        return "Failed to get reminders";
-      }
-    });
-  }, [roomContext, addReminderMutation, trpcUtils]);
+  useAgentRpcMethod(
+    "get_location",
+    z.object({}),
+    useCallback(async () => {
+      const location = await getLocation();
+      return {
+        type: "geo_location",
+        location,
+      };
+    }, []),
+  );
 
   return (
     <>
