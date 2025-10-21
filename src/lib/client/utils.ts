@@ -42,11 +42,13 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
 ) {
   const roomContext = useRoomContext();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: no need to add roomContext to dependencies
   useEffect(() => {
     if (!roomContext) return;
 
     console.log(`[LiveKit RPC] Registering ${rpcMethodName} RPC method`);
 
+    roomContext.unregisterRpcMethod(rpcMethodName);
     roomContext.registerRpcMethod(rpcMethodName, async (data) => {
       try {
         console.log(`[LiveKit RPC] ${rpcMethodName} called with data:`, data);
@@ -66,7 +68,7 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
         } as AgentRPCError);
       }
     });
-  }, [rpcMethodName, inputSchema, roomContext, callback]);
+  }, [rpcMethodName, roomContext, callback]);
 
   return () => {
     console.log(`[LiveKit RPC] Unregistering ${rpcMethodName} RPC method`);
