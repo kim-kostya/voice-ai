@@ -47,7 +47,6 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
 
     console.log(`[LiveKit RPC] Registering ${rpcMethodName} RPC method`);
 
-    roomContext.unregisterRpcMethod(rpcMethodName);
     roomContext.registerRpcMethod(rpcMethodName, async (data) => {
       try {
         console.log(`[LiveKit RPC] ${rpcMethodName} called with data:`, data);
@@ -70,6 +69,7 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
   }, [rpcMethodName, inputSchema, roomContext, callback]);
 
   return () => {
+    console.log(`[LiveKit RPC] Unregistering ${rpcMethodName} RPC method`);
     roomContext.unregisterRpcMethod(rpcMethodName);
   };
 }
