@@ -50,7 +50,6 @@ class DevAgent(Agent):
       rpc_client = AgentRPCClient(room, participant_identity)
 
       location = await rpc_client.get_location()
-      print(location)
 
       return json.dumps({
         "latitude": location.location.latitude,
@@ -69,7 +68,6 @@ class DevAgent(Agent):
   ):
     try:
       weather = get_current_weather_by_coords(latitude, longitude)
-      print(weather)
       return json.dumps(weather)
     except Exception as e:
       print(e)
