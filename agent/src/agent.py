@@ -16,7 +16,7 @@ from livekit.plugins import openai
 from livekit.plugins import assemblyai
 from livekit.plugins import elevenlabs
 
-from src.rpc import AgentRPCClient, GeoLocationRPCMessage
+from rpc import AgentRPCClient
 
 load_dotenv()
 
