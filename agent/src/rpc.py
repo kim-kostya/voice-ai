@@ -1,11 +1,8 @@
 import json
-from typing import TypeVar, get_args
 from dataclasses import dataclass
 from datetime import datetime
 
 from livekit.rtc import Room
-
-TResponse = TypeVar("TResponse")
 
 
 @dataclass
