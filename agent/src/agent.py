@@ -1,3 +1,4 @@
+import json
 import logging
 
 from dotenv import load_dotenv
@@ -8,12 +9,14 @@ from livekit.agents import (
   JobContext,
   RoomOutputOptions,
   WorkerOptions,
-  cli,
+  cli, function_tool, RunContext, get_job_context,
 )
 
 from livekit.plugins import openai
 from livekit.plugins import assemblyai
 from livekit.plugins import elevenlabs
+
+from src.rpc import AgentRPCClient, GeoLocationRPCMessage
 
 load_dotenv()
 
@@ -34,6 +37,26 @@ class DevAgent(Agent):
         model="eleven_multilingual_v2"
       )
     )
+
+  @function_tool()
+  async def get_location(
+    self,
+    context: RunContext
+  ):
+    """
+    Get user geolocation or location based on ip address
+    """
+
+    try:
+      room = get_job_context().room
+      participant_identity = next(iter(room.remote_participants))
+      rpc_client = AgentRPCClient(room, participant_identity)
+
+      location = await rpc_client.get_location()
+
+      return json.dumps(location.location)
+    except Exception:
+      return "Unable to get location"
 
 
 async def entrypoint(ctx: JobContext):
