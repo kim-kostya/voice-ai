@@ -8,5 +8,6 @@ dependencies = [
   "livekit~=1.0",
   "livekit-agents[assemblyai,elevenlabs,openai]~=1.2",
   "orjson>=3.11.3",
+  "pyowm>=3.5.0",
   "python-dotenv",
 ]
