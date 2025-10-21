@@ -14,14 +14,16 @@ export interface AgentRPCSuccess extends AgentRPCMessageBase {
 export interface ReminderRPCMessage extends AgentRPCMessageBase {
   type: "reminder";
   time: Date;
-  message: string;
+  text: string;
 }
 
-export interface ReminderWithIdRPCMessage extends AgentRPCMessageBase {
-  type: "reminder_with_id";
-  id: number;
-  time: Date;
-  message: string;
+export interface RemindersWithIdRPCMessage extends AgentRPCMessageBase {
+  type: "reminders_with_id";
+  reminders: {
+    id: string;
+    time: Date;
+    text: string;
+  }[];
 }
 
 export interface GeoLocationRPCMessage {
@@ -36,7 +38,7 @@ export interface AgentRPCError {
 
 export type AgentRPCMessage =
   | ReminderRPCMessage
-  | ReminderWithIdRPCMessage
+  | RemindersWithIdRPCMessage
   | GeoLocationRPCMessage
   | AgentRPCSuccess
   | AgentRPCError;

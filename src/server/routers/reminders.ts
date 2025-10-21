@@ -22,7 +22,12 @@ export const remindersRouter = {
         .execute();
     }),
   getReminders: protectedProcedure.query(async () => {
-    return await db.select().from(reminders).execute();
+    const result = await db.select().from(reminders).execute();
+    return result.map((reminder) => ({
+      id: reminder.id,
+      text: reminder.text,
+      time: reminder.time,
+    }));
   }),
   checkReminders: publicProcedure.mutation(() => {}),
 };
