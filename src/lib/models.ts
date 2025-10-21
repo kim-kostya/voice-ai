@@ -20,7 +20,7 @@ export interface ReminderRPCMessage extends AgentRPCMessageBase {
 export interface RemindersWithIdRPCMessage extends AgentRPCMessageBase {
   type: "reminders_with_id";
   reminders: {
-    id: string;
+    id: number;
     time: Date;
     text: string;
   }[];
