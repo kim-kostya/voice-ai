@@ -17,6 +17,7 @@ from livekit.plugins import assemblyai
 from livekit.plugins import elevenlabs
 
 from rpc import AgentRPCClient
+from weather import get_current_weather_by_coords
 
 load_dotenv()
 
@@ -38,15 +39,11 @@ class DevAgent(Agent):
       )
     )
 
-  @function_tool()
+  @function_tool(description="Get user location based on ip address or geolocation")
   async def get_location(
     self,
     context: RunContext
   ):
-    """
-    Get user geolocation or location based on ip address
-    """
-
     try:
       room = get_job_context().room
       participant_identity = next(iter(room.remote_participants))
@@ -62,6 +59,21 @@ class DevAgent(Agent):
     except Exception as e:
       print(e)
       return "Unable to get location"
+
+  @function_tool(description="Get current weather based on latitude and longitude")
+  async def get_weather(
+    self,
+    context: RunContext,
+    latitude: float,
+    longitude: float
+  ):
+    try:
+      weather = get_current_weather_by_coords(latitude, longitude)
+      print(weather)
+      return json.dumps(weather)
+    except Exception as e:
+      print(e)
+      return "Unable to get weather"
 
 
 async def entrypoint(ctx: JobContext):
