@@ -53,9 +53,14 @@ class DevAgent(Agent):
       rpc_client = AgentRPCClient(room, participant_identity)
 
       location = await rpc_client.get_location()
+      print(location)
 
-      return json.dumps(location.location)
-    except Exception:
+      return json.dumps({
+        "latitude": location.location.latitude,
+        "longitude": location.location.longitude
+      })
+    except Exception as e:
+      print(e)
       return "Unable to get location"
 
 

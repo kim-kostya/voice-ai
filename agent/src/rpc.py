@@ -56,19 +56,27 @@ class AgentRPCClient:
       payload=json.dumps(payload),
     ))
 
-    if 'type' not in response:
+    if 'json' not in response:
       raise RPCError("Invalid RPC response")
 
-    if response['type'] == 'error':
-      if 'message' not in response:
+    payload = response['json']
+
+    if 'type' not in payload:
+      raise RPCError("Invalid RPC response")
+
+    if payload['type'] == 'error':
+      if 'message' not in payload:
         raise RPCError("Invalid RPC response")
 
-      raise RPCError(response['message'])
+      raise RPCError(payload['message'])
 
-    return response
+    return payload
 
   async def get_location(self) -> GeoLocationRPCMessage:
     response = await self.__perform_rpc_call("get_location", {})
+
+    if 'type' not in response or response['type'] != 'geo_location':
+      raise RPCError("Invalid RPC response")
 
     if 'location' not in response:
       raise RPCError("Invalid RPC response")
