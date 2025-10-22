@@ -27,11 +27,11 @@ logger = logging.getLogger("transcriber")
 class DevAgent(Agent):
   def __init__(self):
     super().__init__(
-      instructions="You are in-development AI agent called Marin.",
+      instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner.",
       stt=assemblyai.STT(),
       llm=openai.llm.LLM(
         base_url="https://openrouter.ai/api/v1",
-        model="google/gemini-2.5-flash"
+        model="openai/gpt-4.1-nano"
       ),
       tts=elevenlabs.TTS(
         voice_id="ODq5zmih8GrVes37Dizd",
@@ -45,6 +45,7 @@ class DevAgent(Agent):
     context: RunContext
   ):
     try:
+      context.disallow_interruptions()
       room = get_job_context().room
       participant_identity = next(iter(room.remote_participants))
       rpc_client = AgentRPCClient(room, participant_identity)
