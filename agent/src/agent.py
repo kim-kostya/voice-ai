@@ -31,7 +31,7 @@ class DevAgent(Agent):
       stt=assemblyai.STT(),
       llm=openai.llm.LLM(
         base_url="https://openrouter.ai/api/v1",
-        model="google/gemini-2.5-flash"
+        model="openai/gpt-4.1-nano"
       ),
       tts=elevenlabs.TTS(
         voice_id="ODq5zmih8GrVes37Dizd",
