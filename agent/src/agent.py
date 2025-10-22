@@ -45,6 +45,7 @@ class DevAgent(Agent):
     context: RunContext
   ):
     try:
+      context.disallow_interruptions()
       room = get_job_context().room
       participant_identity = next(iter(room.remote_participants))
       rpc_client = AgentRPCClient(room, participant_identity)
