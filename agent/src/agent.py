@@ -27,7 +27,7 @@ logger = logging.getLogger("transcriber")
 class DevAgent(Agent):
   def __init__(self):
     super().__init__(
-      instructions="You are in-development AI agent called Marin.",
+      instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner.",
       stt=assemblyai.STT(),
       llm=openai.llm.LLM(
         base_url="https://openrouter.ai/api/v1",
