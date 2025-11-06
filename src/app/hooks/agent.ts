@@ -4,36 +4,7 @@ import { useRoomContext } from "@livekit/components-react";
 import { useEffect } from "react";
 import SuperJSON from "superjson";
 import type { ZodTypeAny, z } from "zod";
-import type { AgentRPCError, AgentRPCMessage, GeoLocation } from "@/lib/models";
-
-// Returns the user's current location or uses ip location
-export function getLocation(): Promise<GeoLocation> {
-  return new Promise((resolve, reject) => {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        resolve({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
-        });
-      },
-      () => {
-        fetch("https://ipapi.co/json/")
-          .then((res) =>
-            res
-              .json()
-              .then((data) =>
-                resolve({
-                  latitude: data.latitude,
-                  longitude: data.longitude,
-                }),
-              )
-              .catch(() => reject("Failed to fetch location")),
-          )
-          .catch(() => reject("Failed to fetch location"));
-      },
-    );
-  });
-}
+import type { AgentRPCError, AgentRPCMessage } from "@/lib/models";
 
 export function useAgentRpcMethod<T extends ZodTypeAny>(
   rpcMethodName: string,
