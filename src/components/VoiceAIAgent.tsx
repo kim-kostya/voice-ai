@@ -4,8 +4,9 @@ import "@livekit/components-styles";
 import { useRoomContext, useVoiceAssistant } from "@livekit/components-react";
 import { useCallback } from "react";
 import { z } from "zod";
+import { useAgentRpcMethod } from "@/app/hooks/agent";
+import { getLocation } from "@/app/utils/location";
 import VoiceButton from "@/components/ui/VoiceButton";
-import { getLocation, useAgentRpcMethod } from "@/lib/client/utils";
 import { trpc } from "@/lib/trpc";
 
 export default function VoiceAIAgent() {
