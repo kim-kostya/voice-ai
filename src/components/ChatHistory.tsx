@@ -1,22 +1,51 @@
-import { useTranscriptions } from "@livekit/components-react";
+import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
+import { ParticipantKind } from "livekit-client";
+import { useRef } from "react";
+import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ChatHistory() {
-  const transcriptions = useTranscriptions();
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const { chatMessages } = useChat();
+
   return (
-    <ul className="min-h-24 h-fit bg-gray-800 rounded-lg p-1 flex gap-1 flex-col">
-      {transcriptions
-        .slice(Math.max(transcriptions.length - 5, 0))
-        .map((transcription) => {
-          return (
-            <li
-              key={transcription.streamInfo.id}
-              className="flex flex-col rounded-lg gap-[8px] p-[8px] bg-white"
+    <ScrollArea className="flex-1 px-4 py-6" ref={scrollRef}>
+      <div className="max-w-3xl mx-auto space-y-6">
+        {chatMessages.map((message: ReceivedChatMessage) => (
+          <div
+            key={message.id}
+            className={`flex gap-3 ${message.from?.kind !== ParticipantKind.AGENT ? "justify-end" : "justify-start"}`}
+          >
+            {message.from?.kind === ParticipantKind.AGENT && (
+              <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
+                <div className="w-4 h-4 border-2 border-white rounded-sm" />
+              </div>
+            )}
+            <div
+              className={`rounded-2xl px-4 py-3 max-w-[70%] ${
+                message.from?.kind !== ParticipantKind.AGENT
+                  ? "bg-teal-600 text-white"
+                  : "bg-muted text-foreground"
+              }`}
             >
-              <h3>{transcription.participantInfo.identity}</h3>
-              <p>{transcription.text}</p>
-            </li>
-          );
-        })}
-    </ul>
+              <p className="text-sm leading-relaxed">
+                {message.from?.kind === ParticipantKind.AGENT ? "Agent" : "You"}
+                :
+              </p>
+              <span className="text-xs opacity-70 mt-1 block">
+                {new Date(message.timestamp).toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </span>
+            </div>
+            {message.from?.kind !== ParticipantKind.AGENT && (
+              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
+                <span className="text-sm font-semibold">U</span>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
   );
 }
