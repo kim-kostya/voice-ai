@@ -6,14 +6,11 @@ import {
   PopoverTrigger,
 } from "@/components/ui/Popover";
 import { Slider } from "@/components/ui/Slider";
+import { useLiveKit } from "@/lib/stores/livekit";
 
-export function VolumeControlPopover({
-  audioLevel,
-  setAudioLevel,
-}: {
-  audioLevel: number;
-  setAudioLevel: (value: number) => void;
-}) {
+export function VolumeControlPopover() {
+  const { volume, setVolume } = useLiveKit();
+
   return (
     <div className="flex items-center gap-2">
       <Popover>
@@ -30,13 +27,11 @@ export function VolumeControlPopover({
           <div className="space-y-3">
             <div className="flex items-center justify-between">
               <span className="text-sm font-medium">Volume</span>
-              <span className="text-sm text-muted-foreground">
-                {audioLevel}%
-              </span>
+              <span className="text-sm text-muted-foreground">{volume}%</span>
             </div>
             <Slider
-              value={[audioLevel]}
-              onValueChange={(value) => setAudioLevel(value[0])}
+              value={[volume]}
+              onValueChange={(value) => setVolume(value[0])}
               max={100}
               step={1}
               className="[&_[role=slider]]:bg-teal-600 [&_[role=slider]]:border-teal-600"
