@@ -1,4 +1,7 @@
-import type { GeoLocation } from "@/lib/hooks/agent-rpc";
+export interface GeoLocation {
+  latitude: number;
+  longitude: number;
+}
 
 // Returns the user's current location or uses ip location
 export function getLocation(): Promise<GeoLocation> {

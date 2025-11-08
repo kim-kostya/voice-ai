@@ -4,6 +4,7 @@ import { useRoomContext } from "@livekit/components-react";
 import { useEffect } from "react";
 import SuperJSON from "superjson";
 import type { ZodTypeAny, z } from "zod";
+import type { GeoLocation } from "@/lib/location";
 
 export function useAgentRpcMethod<T extends ZodTypeAny>(
   rpcMethodName: string,
@@ -44,11 +45,6 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
     console.log(`[LiveKit RPC] Unregistering ${rpcMethodName} RPC method`);
     roomContext.unregisterRpcMethod(rpcMethodName);
   };
-}
-
-export interface GeoLocation {
-  latitude: number;
-  longitude: number;
 }
 
 export interface AgentRPCMessageBase {
