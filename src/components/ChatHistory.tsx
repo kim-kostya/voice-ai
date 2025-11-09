@@ -1,14 +1,12 @@
-import { DataTopic } from "@livekit/components-core";
-import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
+import type { ReceivedChatMessage } from "@livekit/components-react";
 import { ParticipantKind } from "livekit-client";
 import { useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useLiveKit } from "@/lib/stores/livekit";
 
 export default function ChatHistory() {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { chatMessages } = useChat({
-    channelTopic: DataTopic.TRANSCRIPTION,
-  });
+  const { chatMessages } = useLiveKit();
 
   return (
     <ScrollArea className="flex-1 px-4 py-6" ref={scrollRef}>

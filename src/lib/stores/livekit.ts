@@ -1,3 +1,4 @@
+import type { ReceivedChatMessage } from "@livekit/components-react";
 import type { Room } from "livekit-client";
 import { create } from "zustand";
 
@@ -16,11 +17,13 @@ export type LiveKitState = {
   agentState: AgentState;
   volume: number;
   isAudioEnabled: boolean;
+  chatMessages: ReceivedChatMessage[];
   setRoom: (room: Room) => void;
   setRoomState: (state: RoomState) => void;
   setAgentState: (state: AgentState) => void;
   setVolume: (volume: number) => void;
   setAudioEnabled: (enabled: boolean) => void;
+  setChatMessages: (messages: ReceivedChatMessage[]) => void;
 };
 
 export const useLiveKit = create<LiveKitState>((set) => ({
@@ -29,9 +32,11 @@ export const useLiveKit = create<LiveKitState>((set) => ({
   agentState: "disconnected",
   volume: 50,
   isAudioEnabled: false,
+  chatMessages: [],
   setRoom: (room) => set({ room }),
   setRoomState: (state) => set({ roomState: state }),
   setAgentState: (state) => set({ agentState: state }),
   setVolume: (volume) => set({ volume }),
   setAudioEnabled: (enabled) => set({ isAudioEnabled: enabled }),
+  setChatMessages: (messages) => set({ chatMessages: messages }),
 }));
