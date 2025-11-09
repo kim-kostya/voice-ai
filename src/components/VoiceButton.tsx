@@ -12,6 +12,8 @@ export default function VoiceButton() {
 
   const isMuted = !localParticipant.isMicrophoneEnabled;
   const isError = roomState === "failed" || agentState === "failed";
+  const isDisabled =
+    roomState === "connecting" || agentState === "connecting" || isError;
 
   const onClick = async () => {
     if (!isAudioEnabled) {
@@ -33,10 +35,12 @@ export default function VoiceButton() {
           "w-32 h-32 rounded-full flex items-center justify-center transition-all shadow-lg",
           isError
             ? "bg-red-600 hover:bg-red-700 disabled:bg-red-600"
-            : "bg-teal-600 hover:bg-teal-700 disabled:bg-gray-600",
+            : isMuted
+              ? "bg-gray-600 hover:bg-gray-700"
+              : "bg-teal-600 hover:bg-teal-700 disabled:bg-gray-600",
         )}
         type="button"
-        disabled={isMuted}
+        disabled={isDisabled}
         onClick={onClick}
       >
         <VoiceButtonIcon
