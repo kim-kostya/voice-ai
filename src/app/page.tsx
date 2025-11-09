@@ -2,7 +2,6 @@
 
 import { CalendarPopover } from "@/components/popover/CalendarPopover";
 import { ChatHistoryPopover } from "@/components/popover/ChatHistoryPopover";
-import { VoiceModelSettingsPopover } from "@/components/popover/VoiceModelSettingsPopover";
 import { VolumeControlPopover } from "@/components/popover/VolumeControlPopover";
 import VoiceButton from "@/components/VoiceButton";
 import { VoiceTranscriptionHandler } from "@/components/VoiceTranscriptionHandler";
