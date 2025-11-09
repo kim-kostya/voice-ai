@@ -2,14 +2,37 @@ import { useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { type ChatMessage, useLiveKit } from "@/lib/stores/livekit";
 
-export default function ChatHistory() {
+export default function ChatHistory({
+  inverse = false,
+  maxMessageCount = 0,
+}: {
+  inverse: boolean;
+  maxMessageCount: number;
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const { chatMessages } = useLiveKit();
 
+  let visibleChatMessages = [];
+
+  if (inverse) {
+    visibleChatMessages = chatMessages.reverse();
+    if (maxMessageCount > 0) {
+      visibleChatMessages = visibleChatMessages.slice(0, maxMessageCount);
+    }
+  } else {
+    visibleChatMessages = chatMessages;
+    if (maxMessageCount > 0) {
+      visibleChatMessages = visibleChatMessages.slice(
+        visibleChatMessages.length - maxMessageCount,
+        visibleChatMessages.length,
+      );
+    }
+  }
+
   return (
-    <ScrollArea className="flex-1 px-4 py-6" ref={scrollRef}>
+    <ScrollArea className="flex-1 px-4 py-6 h-100" ref={scrollRef}>
       <div className="max-w-3xl mx-auto space-y-6">
-        {chatMessages.map((message: ChatMessage) => (
+        {visibleChatMessages.map((message: ChatMessage) => (
           <div
             key={message.id}
             className={`flex gap-3 ${message.from === "user" ? "justify-end" : "justify-start"}`}

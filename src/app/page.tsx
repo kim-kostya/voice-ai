@@ -3,6 +3,7 @@
 import { ChatHistoryPopover } from "@/components/popover/ChatHistoryPopover";
 import { VolumeControlPopover } from "@/components/popover/VolumeControlPopover";
 import VoiceButton from "@/components/VoiceButton";
+import { VoiceTranscriptionHandler } from "@/components/VoiceTranscriptionHandler";
 
 export default function Home() {
   return (
@@ -11,6 +12,7 @@ export default function Home() {
       <div className="flex items-center gap-2 mt-4">
         <VolumeControlPopover />
         <ChatHistoryPopover />
+        <VoiceTranscriptionHandler />
       </div>
     </main>
   );

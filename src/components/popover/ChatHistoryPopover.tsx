@@ -15,8 +15,8 @@ export function ChatHistoryPopover() {
           <Type className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[480px] p-6">
-        <ChatHistory />
+      <PopoverContent className="w-[480px] p-6 max-h-[50vh] overflow-hidden">
+        <ChatHistory inverse={true} maxMessageCount={10} />
       </PopoverContent>
     </Popover>
   );
