@@ -1,5 +1,4 @@
 import Image from "next/image";
-import type * as React from "react";
 
 export function LoadingSpinner({ ...props }) {
   return (
