@@ -121,10 +121,7 @@ function LiveKitAgent() {
     newChatMessages.forEach((newMessage) => {
       const existingMessage = chatMessages.find((m) => m.id === newMessage.id);
       if (existingMessage) {
-        if (
-          existingMessage.from === "agent" &&
-          newMessage.timestamp > existingMessage.timestamp
-        ) {
+        if (existingMessage.from === "agent") {
           console.log("[LiveKit] Updating agent message: ", newMessage.message);
           existingMessage.message = newMessage.message;
           existingMessage.timestamp = newMessage.timestamp;
