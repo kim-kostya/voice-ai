@@ -1,13 +1,12 @@
 "use client";
 
-import { DataTopic } from "@livekit/components-core";
+import type { ReceivedChatMessage } from "@livekit/components-core";
 import {
   RoomAudioRenderer,
   RoomContext,
-  useChat,
   useVoiceAssistant,
 } from "@livekit/components-react";
-import { ParticipantKind, Room, RoomEvent } from "livekit-client";
+import { Room, RoomEvent } from "livekit-client";
 import { type ReactNode, useEffect, useState } from "react";
 import { z } from "zod";
 import { useAgentRpcMethod } from "@/lib/hooks/agent";
@@ -40,6 +39,7 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
     }
   }, [room, setRoom, roomId]);
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: roomState is only used for checks
   useEffect(() => {
     if (!room) return;
 
@@ -49,6 +49,11 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
       try {
         if (!roomId) return;
         if (!room) return;
+
+        if (roomState === "connected") {
+          console.log("[LiveKit] Room is already connected");
+          return;
+        }
 
         console.log("[LiveKit] Attempting to connect to room");
         setRoomState("connecting");
@@ -68,22 +73,26 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
       console.log("[LiveKit] Room connected");
       setRoomState("connected");
     };
+
     const onDisconnected = () => {
       console.log("[LiveKit] Room disconnected");
       setRoomState("disconnected");
       setTimeout(connect, 10000, abortController.signal);
     };
 
+    const onChatMessage = (event: ReceivedChatMessage) => {};
+
     room.on(RoomEvent.Connected, onConnected);
     room.on(RoomEvent.Disconnected, onDisconnected);
+    room.on(RoomEvent.ChatMessage, onChatMessage);
 
-    connect().finally(() => {
-      console.log("[LiveKit] Connecting to room");
-    });
+    // noinspection JSIgnoredPromiseFromCall
+    connect();
 
     return () => {
       room.off(RoomEvent.Connected, onConnected);
       room.off(RoomEvent.Disconnected, onDisconnected);
+      room.off(RoomEvent.ChatMessage, onChatMessage);
       abortController.abort();
     };
   }, [room, roomId, setRoomState, trpcUtils.rooms.getRoomData]);
@@ -107,42 +116,6 @@ function LiveKitAgent() {
   const trpcUtils = trpc.useUtils();
   const addReminder = trpc.reminders.addReminder.useMutation();
   const removeReminder = trpc.reminders.removeReminder.useMutation();
-
-  const { chatMessages: oldChatMessages, setChatMessages } = useLiveKit();
-  const { chatMessages: newChatMessages } = useChat({
-    channelTopic: DataTopic.TRANSCRIPTION,
-  });
-
-  // biome-ignore lint/correctness/useExhaustiveDependencies: No need to add oldChatMessages to dependencies
-  useEffect(() => {
-    console.log("[LiveKit] Updating chat messages");
-    const chatMessages = [...oldChatMessages];
-
-    newChatMessages.forEach((newMessage) => {
-      const existingMessage = chatMessages.find((m) => m.id === newMessage.id);
-      if (existingMessage) {
-        if (existingMessage.from === "agent") {
-          console.log("[LiveKit] Updating agent message: ", newMessage.message);
-          existingMessage.message = newMessage.message;
-          existingMessage.timestamp = newMessage.timestamp;
-        }
-        return;
-      }
-      console.log(
-        `[LiveKit] Adding new ${newMessage.from} message: `,
-        newMessage.message,
-      );
-      chatMessages.push({
-        id: newMessage.id,
-        message: newMessage.message,
-        timestamp: newMessage.timestamp,
-        from:
-          newMessage.from?.kind === ParticipantKind.AGENT ? "agent" : "user",
-      });
-    });
-
-    setChatMessages(chatMessages.sort((a, b) => a.timestamp - b.timestamp));
-  }, [newChatMessages]);
 
   useAgentRpcMethod(
     "get_location",
