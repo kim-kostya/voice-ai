@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import type React from "react";
+import { LiveKitRoom } from "@/components/LiveKitRoom";
 import TRPCProvider from "@/components/TRPCProvider";
 
 const geistSans = Geist({
@@ -29,7 +30,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <TRPCProvider>{children}</TRPCProvider>
+        <TRPCProvider>
+          <LiveKitRoom>{children}</LiveKitRoom>
+        </TRPCProvider>
       </body>
     </html>
   );

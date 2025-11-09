@@ -1,6 +1,10 @@
 "use client";
 
-import { RoomAudioRenderer, RoomContext } from "@livekit/components-react";
+import {
+  RoomAudioRenderer,
+  RoomContext,
+  useVoiceAssistant,
+} from "@livekit/components-react";
 import { Room, RoomEvent } from "livekit-client";
 import { type ReactNode, useEffect, useState } from "react";
 import { useLiveKit } from "@/lib/stores/livekit";
@@ -8,7 +12,7 @@ import { trpc } from "@/lib/trpc";
 
 export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
   const trpcUtils = trpc.useUtils();
-  const { room, setRoom, volume, setRoomState } = useLiveKit();
+  const { room, setRoom, volume, roomState, setRoomState } = useLiveKit();
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -72,6 +76,40 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
     <RoomContext.Provider value={room}>
       {children}
       <RoomAudioRenderer volume={volume / 100.0} />
+      {roomState === "connected" && <LiveKitAgent />}
     </RoomContext.Provider>
   );
+}
+
+function LiveKitAgent() {
+  const { setAgentState } = useLiveKit();
+  const { state } = useVoiceAssistant();
+
+  useEffect(() => {
+    switch (state) {
+      case "connecting":
+        setAgentState("connecting");
+        break;
+      case "listening":
+        setAgentState("listening");
+        break;
+      case "disconnected":
+        setAgentState("disconnected");
+        break;
+      case "thinking":
+        setAgentState("thinking");
+        break;
+      case "initializing":
+        setAgentState("connecting");
+        break;
+      case "speaking":
+        setAgentState("speaking");
+        break;
+      default:
+        setAgentState("disconnected");
+        break;
+    }
+  }, [state, setAgentState]);
+
+  return <div style={{ display: "none" }}></div>;
 }
