@@ -16,6 +16,7 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
+    console.log("[LiveKit] Initializing room");
     if (!room) {
       setRoom(
         new Room({
@@ -32,22 +33,19 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
     if (!roomId) {
       setRoomId(crypto.randomUUID());
     }
-  });
+  }, [room, setRoom, roomId]);
 
   useEffect(() => {
     if (!room) return;
-    if (!roomId) return;
 
     const abortController = new AbortController();
 
-    const onConnected = () => setRoomState("connected");
-    const onDisconnected = () => {
-      setRoomState("disconnected");
-      setTimeout(connect, 10000, abortController.signal);
-    };
-
     const connect = async () => {
       try {
+        if (!roomId) return;
+        if (!room) return;
+
+        console.log("[LiveKit] Attempting to connect to room");
         setRoomState("connecting");
         const roomData = await trpcUtils.rooms.getRoomData.fetch({
           roomId: roomId as string,
@@ -55,15 +53,28 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
         });
         await room.connect(roomData.wsUrl, roomData.token);
       } catch (error) {
-        console.error("Failed to reconnect to room:", error);
+        console.error("[LiveKit] Failed to connect to room:", error);
         setRoomState("failed");
+        setTimeout(connect, 10000, abortController.signal);
       }
+    };
+
+    const onConnected = () => {
+      console.log("[LiveKit] Room connected");
+      setRoomState("connected");
+    };
+    const onDisconnected = () => {
+      console.log("[LiveKit] Room disconnected");
+      setRoomState("disconnected");
+      setTimeout(connect, 10000, abortController.signal);
     };
 
     room.on(RoomEvent.Connected, onConnected);
     room.on(RoomEvent.Disconnected, onDisconnected);
 
-    abortController.abort();
+    connect().finally(() => {
+      console.log("[LiveKit] Connecting to room");
+    });
 
     return () => {
       room.off(RoomEvent.Connected, onConnected);
@@ -92,25 +103,32 @@ function LiveKitAgent() {
   useEffect(() => {
     switch (state) {
       case "connecting":
+        console.log("[LiveKit] Connecting to agent");
         setAgentState("connecting");
-        break;
-      case "listening":
-        setAgentState("listening");
-        break;
-      case "disconnected":
-        setAgentState("disconnected");
-        break;
-      case "thinking":
-        setAgentState("thinking");
         break;
       case "initializing":
+        console.log("[LiveKit] Initializing agent");
         setAgentState("connecting");
         break;
+      case "disconnected":
+        console.log("[LiveKit] Agent is disconnected");
+        setAgentState("disconnected");
+        break;
+      case "listening":
+        console.log("[LiveKit] Agent is listening");
+        setAgentState("listening");
+        break;
+      case "thinking":
+        console.log("[LiveKit] Agent is thinking");
+        setAgentState("thinking");
+        break;
       case "speaking":
+        console.log("[LiveKit] Agent is speaking");
         setAgentState("speaking");
         break;
       default:
-        setAgentState("disconnected");
+        console.log("[LiveKit] Unknown agent state received");
+        setAgentState("failed");
         break;
     }
   }, [state, setAgentState]);
