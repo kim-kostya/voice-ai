@@ -15,7 +15,6 @@ from livekit.agents import (
 from livekit.plugins import openai
 from livekit.plugins import assemblyai
 from livekit.plugins import elevenlabs
-from livekit.plugins.turn_detector.english import EnglishModel
 from livekit.plugins import silero
 
 from rpc import AgentRPCClient
@@ -75,6 +74,7 @@ class DevAgent(Agent):
     except Exception as e:
       print(e)
       return "Unable to get weather"
+
 
 def prewarm(proc: JobProcess):
   proc.userdata["vad"] = silero.VAD.load()
