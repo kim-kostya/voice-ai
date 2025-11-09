@@ -130,6 +130,18 @@ function LiveKitAgent() {
     },
   );
 
+  useAgentRpcMethod(
+    "remove_reminder",
+    z.object({ id: z.number().int().positive() }),
+    async (data) => {
+      await removeReminder.mutateAsync({ id: data.id });
+
+      return {
+        type: "success",
+      };
+    },
+  );
+
   useAgentRpcMethod("get_reminders", z.object({}), async () => {
     const reminders = await trpcUtils.reminders.getReminders.fetch();
     return {
