@@ -1,3 +1,4 @@
+import { DataTopic } from "@livekit/components-core";
 import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
 import { ParticipantKind } from "livekit-client";
 import { useRef } from "react";
@@ -5,7 +6,9 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 
 export default function ChatHistory() {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { chatMessages } = useChat();
+  const { chatMessages } = useChat({
+    channelTopic: DataTopic.TRANSCRIPTION,
+  });
 
   return (
     <ScrollArea className="flex-1 px-4 py-6" ref={scrollRef}>
@@ -27,10 +30,7 @@ export default function ChatHistory() {
                   : "bg-muted text-foreground"
               }`}
             >
-              <p className="text-sm leading-relaxed">
-                {message.from?.kind === ParticipantKind.AGENT ? "Agent" : "You"}
-                :
-              </p>
+              <p className="text-sm leading-relaxed">{message.message}</p>
               <span className="text-xs opacity-70 mt-1 block">
                 {new Date(message.timestamp).toLocaleTimeString([], {
                   hour: "2-digit",
