@@ -12,8 +12,10 @@ export default function Home() {
       <Header />
       <main className="flex-1 flex flex-col items-center justify-center px-4 pb-20 pt-20">
         <VoiceButton />
-        <VolumeControlPopover />
-        <ChatHistoryPopover />
+        <div className="flex items-center gap-2 mt-4">
+          <VolumeControlPopover />
+          <ChatHistoryPopover />
+        </div>
       </main>
     </div>
   );
