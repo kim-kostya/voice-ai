@@ -7,6 +7,9 @@ import {
 } from "@livekit/components-react";
 import { Room, RoomEvent } from "livekit-client";
 import { type ReactNode, useEffect, useState } from "react";
+import { z } from "zod";
+import { useAgentRpcMethod } from "@/lib/hooks/agent";
+import { getLocation } from "@/lib/location";
 import { useLiveKit } from "@/lib/stores/livekit";
 import { trpc } from "@/lib/trpc";
 
@@ -99,6 +102,41 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
 function LiveKitAgent() {
   const { setAgentState } = useLiveKit();
   const { state } = useVoiceAssistant();
+  const trpcUtils = trpc.useUtils();
+  const addReminder = trpc.reminders.addReminder.useMutation();
+  const removeReminder = trpc.reminders.removeReminder.useMutation();
+
+  useAgentRpcMethod("get_location", z.object({}), async () => {
+    const location = await getLocation();
+
+    return {
+      type: "geo_location",
+      location,
+    };
+  });
+
+  useAgentRpcMethod(
+    "add_reminder",
+    z.object({ text: z.string(), time: z.date() }),
+    async (data) => {
+      await addReminder.mutateAsync({
+        text: data.text,
+        time: data.time,
+      });
+
+      return {
+        type: "success",
+      };
+    },
+  );
+
+  useAgentRpcMethod("get_reminders", z.object({}), async () => {
+    const reminders = await trpcUtils.reminders.getReminders.fetch();
+    return {
+      type: "reminders_with_id",
+      reminders,
+    };
+  });
 
   useEffect(() => {
     switch (state) {
