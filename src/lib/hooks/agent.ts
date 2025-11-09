@@ -13,6 +13,7 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
 ) {
   const roomContext = useRoomContext();
 
+  // biome-ignore lint/correctness/useExhaustiveDependencies: on-mount effect
   useEffect(() => {
     if (!roomContext) return;
 
@@ -43,7 +44,7 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
       console.log(`[LiveKit RPC] Unregistering ${rpcMethodName} RPC method`);
       roomContext.unregisterRpcMethod(rpcMethodName);
     };
-  });
+  }, []);
 }
 
 export interface AgentRPCMessageBase {
