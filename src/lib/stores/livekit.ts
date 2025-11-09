@@ -14,24 +14,24 @@ export type LiveKitState = {
   room: Room | undefined;
   roomState: RoomState;
   agentState: AgentState;
-  retryCount: number;
   volume: number;
+  isAudioEnabled: boolean;
   setRoom: (room: Room) => void;
   setRoomState: (state: RoomState) => void;
   setAgentState: (state: AgentState) => void;
-  setRetryCount: (count: number) => void;
   setVolume: (volume: number) => void;
+  setAudioEnabled: (enabled: boolean) => void;
 };
 
 export const useLiveKit = create<LiveKitState>((set) => ({
   room: undefined,
   roomState: "disconnected",
   agentState: "disconnected",
-  retryCount: 0,
   volume: 50,
+  isAudioEnabled: false,
   setRoom: (room) => set({ room }),
   setRoomState: (state) => set({ roomState: state }),
   setAgentState: (state) => set({ agentState: state }),
-  setRetryCount: (count) => set({ retryCount: count }),
   setVolume: (volume) => set({ volume }),
+  setAudioEnabled: (enabled) => set({ isAudioEnabled: enabled }),
 }));

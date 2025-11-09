@@ -1,15 +1,28 @@
-import { useLocalParticipant } from "@livekit/components-react";
+import { useLocalParticipant, useRoomContext } from "@livekit/components-react";
 import { Mic, MicOff } from "lucide-react";
 import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { useLiveKit } from "@/lib/stores/livekit";
 import { cn } from "@/lib/utils";
 
 export default function VoiceButton() {
-  const { roomState, agentState } = useLiveKit();
+  const { roomState, agentState, isAudioEnabled, setAudioEnabled } =
+    useLiveKit();
   const { localParticipant } = useLocalParticipant();
+  const room = useRoomContext();
 
   const isMuted = !localParticipant.isMicrophoneEnabled;
   const isError = roomState === "failed" || agentState === "failed";
+
+  const onClick = async () => {
+    if (!isAudioEnabled) {
+      await room.startAudio();
+      setAudioEnabled(true);
+    }
+
+    await localParticipant.setMicrophoneEnabled(
+      !localParticipant.isMicrophoneEnabled,
+    );
+  };
 
   return (
     <div
@@ -24,11 +37,7 @@ export default function VoiceButton() {
         )}
         type="button"
         disabled={isMuted}
-        onClick={async () => {
-          await localParticipant.setMicrophoneEnabled(
-            !localParticipant.isMicrophoneEnabled,
-          );
-        }}
+        onClick={onClick}
       >
         <VoiceButtonIcon
           isMuted={isMuted}
