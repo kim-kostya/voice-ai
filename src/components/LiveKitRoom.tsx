@@ -1,12 +1,15 @@
 "use client";
 
 import { RoomAudioRenderer, RoomContext } from "@livekit/components-react";
-import { Room } from "livekit-client";
-import { type ReactNode, useEffect } from "react";
+import { Room, RoomEvent } from "livekit-client";
+import { type ReactNode, useEffect, useState } from "react";
 import { useLiveKit } from "@/lib/stores/livekit";
+import { trpc } from "@/lib/trpc";
 
 export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
-  const { room, setRoom, volume } = useLiveKit();
+  const trpcUtils = trpc.useUtils();
+  const { room, setRoom, volume, setRoomState } = useLiveKit();
+  const [roomId, setRoomId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
     if (!room) {
@@ -17,7 +20,49 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
         }),
       );
     }
+
+    if (!roomId) {
+      setRoomId(crypto.randomUUID());
+    }
   });
+
+  useEffect(() => {
+    if (!room) return;
+    if (!roomId) return;
+
+    const abortController = new AbortController();
+
+    const onConnected = () => setRoomState("connected");
+    const onDisconnected = () => {
+      setRoomState("disconnected");
+      setTimeout(connect, 10000, abortController.signal);
+    };
+
+    const connect = async () => {
+      try {
+        setRoomState("connecting");
+        const roomData = await trpcUtils.rooms.getRoomData.fetch({
+          roomId: roomId as string,
+          username: "user",
+        });
+        await room.connect(roomData.wsUrl, roomData.token);
+      } catch (error) {
+        console.error("Failed to reconnect to room:", error);
+        setRoomState("failed");
+      }
+    };
+
+    room.on(RoomEvent.Connected, onConnected);
+    room.on(RoomEvent.Disconnected, onDisconnected);
+
+    abortController.abort();
+
+    return () => {
+      room.off(RoomEvent.Connected, onConnected);
+      room.off(RoomEvent.Disconnected, onDisconnected);
+      abortController.abort();
+    };
+  }, [room, roomId, setRoomState, trpcUtils.rooms.getRoomData]);
 
   if (!room) {
     return <p>Loading...</p>;
