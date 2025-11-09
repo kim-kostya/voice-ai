@@ -1,4 +1,3 @@
-import type { ReceivedChatMessage } from "@livekit/components-react";
 import type { Room } from "livekit-client";
 import { create } from "zustand";
 
@@ -11,19 +10,26 @@ export type AgentState =
   | "disconnected"
   | "failed";
 
+export interface ChatMessage {
+  id: string;
+  message: string;
+  timestamp: number;
+  from: "user" | "agent";
+}
+
 export type LiveKitState = {
   room: Room | undefined;
   roomState: RoomState;
   agentState: AgentState;
   volume: number;
   isAudioEnabled: boolean;
-  chatMessages: ReceivedChatMessage[];
+  chatMessages: ChatMessage[];
   setRoom: (room: Room) => void;
   setRoomState: (state: RoomState) => void;
   setAgentState: (state: AgentState) => void;
   setVolume: (volume: number) => void;
   setAudioEnabled: (enabled: boolean) => void;
-  setChatMessages: (messages: ReceivedChatMessage[]) => void;
+  setChatMessages: (messages: ChatMessage[]) => void;
 };
 
 export const useLiveKit = create<LiveKitState>((set) => ({

@@ -1,11 +1,13 @@
 "use client";
 
+import { DataTopic } from "@livekit/components-core";
 import {
   RoomAudioRenderer,
   RoomContext,
+  useChat,
   useVoiceAssistant,
 } from "@livekit/components-react";
-import { Room, RoomEvent } from "livekit-client";
+import { ParticipantKind, Room, RoomEvent } from "livekit-client";
 import { type ReactNode, useEffect, useState } from "react";
 import { z } from "zod";
 import { useAgentRpcMethod } from "@/lib/hooks/agent";
@@ -106,14 +108,58 @@ function LiveKitAgent() {
   const addReminder = trpc.reminders.addReminder.useMutation();
   const removeReminder = trpc.reminders.removeReminder.useMutation();
 
-  useAgentRpcMethod("get_location", z.object({}), async () => {
-    const location = await getLocation();
-
-    return {
-      type: "geo_location",
-      location,
-    };
+  const { chatMessages: oldChatMessages, setChatMessages } = useLiveKit();
+  const { chatMessages: newChatMessages } = useChat({
+    channelTopic: DataTopic.TRANSCRIPTION,
   });
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: No need to add oldChatMessages to dependencies
+  useEffect(() => {
+    console.log("[LiveKit] Updating chat messages");
+    const chatMessages = [...oldChatMessages];
+
+    newChatMessages.forEach((newMessage) => {
+      const existingMessage = chatMessages.find((m) => m.id === newMessage.id);
+      if (existingMessage) {
+        if (
+          existingMessage.from === "agent" &&
+          newMessage.timestamp > existingMessage.timestamp
+        ) {
+          console.log("[LiveKit] Updating agent message: ", newMessage.message);
+          existingMessage.message = newMessage.message;
+          existingMessage.timestamp = newMessage.timestamp;
+        }
+        return;
+      }
+      console.log(
+        `[LiveKit] Adding new ${newMessage.from} message: `,
+        newMessage.message,
+      );
+      chatMessages.push({
+        id: newMessage.id,
+        message: newMessage.message,
+        timestamp: newMessage.timestamp,
+        from:
+          newMessage.from?.kind === ParticipantKind.AGENT ? "agent" : "user",
+      });
+    });
+
+    setChatMessages(chatMessages.sort((a, b) => a.timestamp - b.timestamp));
+  }, [newChatMessages]);
+
+  useAgentRpcMethod(
+    "get_location",
+    z.object({}),
+    async () => {
+      const location = await getLocation();
+
+      return {
+        type: "geo_location",
+        location,
+      };
+    },
+    [],
+  );
 
   useAgentRpcMethod(
     "add_reminder",
@@ -128,6 +174,7 @@ function LiveKitAgent() {
         type: "success",
       };
     },
+    [],
   );
 
   useAgentRpcMethod(
@@ -140,15 +187,21 @@ function LiveKitAgent() {
         type: "success",
       };
     },
+    [],
   );
 
-  useAgentRpcMethod("get_reminders", z.object({}), async () => {
-    const reminders = await trpcUtils.reminders.getReminders.fetch();
-    return {
-      type: "reminders_with_id",
-      reminders,
-    };
-  });
+  useAgentRpcMethod(
+    "get_reminders",
+    z.object({}),
+    async () => {
+      const reminders = await trpcUtils.reminders.getReminders.fetch();
+      return {
+        type: "reminders_with_id",
+        reminders,
+      };
+    },
+    [],
+  );
 
   useEffect(() => {
     switch (state) {
