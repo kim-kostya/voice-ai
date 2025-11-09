@@ -1,14 +1,14 @@
 import Image from "next/image";
-import { cn } from "@/lib/utils";
+import type { RefAttributes } from "react";
 
-export function LoadingSpinner() {
+export function LoadingSpinner({ ...props }: RefAttributes<HTMLImageElement>) {
   return (
     <Image
       width={512}
       height={512}
       src="/loading-spinner.svg"
       alt="Loading..."
-      className={cn("w-16 h-16")}
+      {...props}
     />
   );
 }
