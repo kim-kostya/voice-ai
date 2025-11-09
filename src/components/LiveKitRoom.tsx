@@ -21,6 +21,10 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
         new Room({
           dynacast: true,
           adaptiveStream: true,
+          audioCaptureDefaults: {
+            echoCancellation: true,
+            noiseSuppression: true,
+          },
         }),
       );
     }
