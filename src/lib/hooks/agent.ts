@@ -44,6 +44,7 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
       console.log(`[LiveKit RPC] Unregistering ${rpcMethodName} RPC method`);
       roomContext.unregisterRpcMethod(rpcMethodName);
     };
+    // biome-ignore lint/correctness/useExhaustiveDependencies: it's passed as parameter
   }, deps);
 }
 
