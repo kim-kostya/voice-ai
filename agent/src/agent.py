@@ -85,6 +85,7 @@ async def entrypoint(ctx: JobContext):
 
   session = AgentSession(
     vad=ctx.proc.userdata["vad"],
+    use_tts_aligned_transcript=True
   )
 
   await session.start(
@@ -99,6 +100,7 @@ async def entrypoint(ctx: JobContext):
       # If you don't want to send the transcription back to the room, set this to False
       transcription_enabled=True,
       audio_enabled=True,
+      sync_transcription=True,
     ),
   )
 
