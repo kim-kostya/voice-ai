@@ -1,7 +1,7 @@
 import Image from "next/image";
-import type { RefAttributes } from "react";
+import type * as React from "react";
 
-export function LoadingSpinner({ ...props }: RefAttributes<HTMLImageElement>) {
+export function LoadingSpinner({ ...props }) {
   return (
     <Image
       width={512}
