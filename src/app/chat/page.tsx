@@ -6,17 +6,21 @@ import { Paperclip, Send } from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import ChatHistory from "@/components/ChatHistory";
+import TextChatHandler from "@/components/TextChatHandler";
 import { Button } from "@/components/ui/Button";
 import { TextArea } from "@/components/ui/TextArea";
 
 export default function Chat() {
   return (
-    <main className="flex-1 flex overflow-hidden">
-      <div className="flex-1 flex flex-col">
-        <ChatHistory inverse={false} maxMessageCount={0} />
-        <ChatInput />
-      </div>
-    </main>
+    <>
+      <main className="flex-1 flex overflow-hidden">
+        <div className="flex-1 flex flex-col">
+          <ChatHistory inverse={false} maxMessageCount={0} />
+          <ChatInput />
+        </div>
+      </main>
+      <TextChatHandler />
+    </>
   );
 }
 
