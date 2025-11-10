@@ -89,7 +89,6 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
 
     room.on(RoomEvent.Connected, onConnected);
     room.on(RoomEvent.Disconnected, onDisconnected);
-    room.on(RoomEvent.ChatMessage, onChatMessage);
 
     // noinspection JSIgnoredPromiseFromCall
     connect();
@@ -97,7 +96,6 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
     return () => {
       room.off(RoomEvent.Connected, onConnected);
       room.off(RoomEvent.Disconnected, onDisconnected);
-      room.off(RoomEvent.ChatMessage, onChatMessage);
       abortController.abort();
     };
   }, [room, roomId, setRoomState, trpcUtils.rooms.getRoomData]);
