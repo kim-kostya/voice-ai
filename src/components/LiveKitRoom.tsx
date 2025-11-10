@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReceivedChatMessage } from "@livekit/components-core";
 import {
   RoomAudioRenderer,
   RoomContext,
