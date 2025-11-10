@@ -15,8 +15,8 @@ from livekit.agents import (
 from livekit.plugins import openai
 from livekit.plugins import assemblyai
 from livekit.plugins import elevenlabs
-from livekit.plugins.turn_detector.english import EnglishModel
 from livekit.plugins import silero
+from livekit.rtc import RpcInvocationData
 
 from rpc import AgentRPCClient
 from weather import get_current_weather_by_coords
@@ -76,6 +76,7 @@ class DevAgent(Agent):
       print(e)
       return "Unable to get weather"
 
+
 def prewarm(proc: JobProcess):
   proc.userdata["vad"] = silero.VAD.load()
 
@@ -87,6 +88,12 @@ async def entrypoint(ctx: JobContext):
     vad=ctx.proc.userdata["vad"],
     use_tts_aligned_transcript=True
   )
+
+  @ctx.room.local_participant.register_rpc_method("set_audio_output")
+  async def set_audio_output(data: RpcInvocationData) -> None:
+    req = json.loads(data.payload)
+    session.input.set_audio_enabled(req["enabled"])
+    session.output.set_audio_enabled(req["enabled"])
 
   await session.start(
     agent=DevAgent(),
