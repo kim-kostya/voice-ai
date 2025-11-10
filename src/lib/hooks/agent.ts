@@ -5,6 +5,34 @@ import { type DependencyList, useCallback, useEffect } from "react";
 import SuperJSON from "superjson";
 import type { ZodTypeAny, z } from "zod";
 import type { GeoLocation } from "@/lib/location";
+import { useLiveKit } from "@/lib/stores/livekit";
+
+export function useAgentAudioOutput(enabled: boolean) {
+  const { room } = useLiveKit();
+  const { agent } = useVoiceAssistant();
+
+  useEffect(() => {
+    if (!room) return;
+    if (!agent) return;
+
+    room.localParticipant
+      .performRpc({
+        method: "set_audio_output",
+        payload: JSON.stringify({
+          enabled,
+        }),
+        destinationIdentity: agent.identity,
+      })
+      .then(() => {
+        console.log(
+          `[LiveKit] Set audio output to ${enabled ? "enabled" : "disabled"}`,
+        );
+      })
+      .catch((error) => {
+        console.error("[LiveKit] Failed to set audio output:", error);
+      });
+  }, [room, agent, enabled]);
+}
 
 export function useAgentRpcMethod<T extends ZodTypeAny>(
   rpcMethodName: string,

@@ -9,8 +9,11 @@ import ChatHistory from "@/components/ChatHistory";
 import TextChatHandler from "@/components/TextChatHandler";
 import { Button } from "@/components/ui/Button";
 import { TextArea } from "@/components/ui/TextArea";
+import { useAgentAudioOutput } from "@/lib/hooks/agent";
 
 export default function Chat() {
+  useAgentAudioOutput(false);
+
   return (
     <>
       <main className="flex-1 flex overflow-hidden">
