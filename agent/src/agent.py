@@ -9,12 +9,14 @@ from livekit.agents import (
   JobContext,
   RoomOutputOptions,
   WorkerOptions,
-  cli, function_tool, RunContext, get_job_context,
+  cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess,
 )
 
 from livekit.plugins import openai
 from livekit.plugins import assemblyai
 from livekit.plugins import elevenlabs
+from livekit.plugins import silero
+from livekit.rtc import RpcInvocationData
 
 from rpc import AgentRPCClient
 from weather import get_current_weather_by_coords
@@ -75,22 +77,40 @@ class DevAgent(Agent):
       return "Unable to get weather"
 
 
+def prewarm(proc: JobProcess):
+  proc.userdata["vad"] = silero.VAD.load()
+
 async def entrypoint(ctx: JobContext):
   logger.info(f"starting dev agent (speech to text) example, room: {ctx.room.name}")
   await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
 
-  session = AgentSession()
+  session = AgentSession(
+    vad=ctx.proc.userdata["vad"],
+    use_tts_aligned_transcript=True
+  )
+
+  @ctx.room.local_participant.register_rpc_method("set_audio_output")
+  async def set_audio_output(data: RpcInvocationData) -> None:
+    req = json.loads(data.payload)
+    session.input.set_audio_enabled(req["enabled"])
+    session.output.set_audio_enabled(req["enabled"])
 
   await session.start(
     agent=DevAgent(),
     room=ctx.room,
+    room_input_options=RoomInputOptions(
+      close_on_disconnect=True,
+      text_enabled=True,
+      audio_enabled=True,
+    ),
     room_output_options=RoomOutputOptions(
       # If you don't want to send the transcription back to the room, set this to False
       transcription_enabled=True,
       audio_enabled=True,
+      sync_transcription=True,
     ),
   )
 
 
 if __name__ == "__main__":
-  cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
+  cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint, prewarm_fnc=prewarm))

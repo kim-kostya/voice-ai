@@ -10,11 +10,8 @@ import { createContext } from "@/server/trpc";
 function getClientIp(req: Request): string {
   const headers = req.headers;
   const xff = headers.get("x-forwarded-for");
-  if (xff) {
-    // Could be a list: client, proxy1, proxy2
-    const ip = xff.split(",")[0]?.trim();
-    if (ip) return ip;
-  }
+  if (xff) return xff.split(",")[0]?.trim() ?? "unknown";
+
   const candidates = [
     "cf-connecting-ip",
     "x-real-ip",
@@ -27,13 +24,12 @@ function getClientIp(req: Request): string {
     const val = headers.get(h);
     if (val) return val;
   }
-  // As a last resort, use the user-agent as a very weak key to avoid nulls
+
   return headers.get("user-agent") ?? "unknown";
 }
 
 async function getUser(): Promise<User> {
   const requestCookies = await cookies();
-
   const userIdentifier = requestCookies.get("userId")?.value;
 
   if (!userIdentifier) {
@@ -51,22 +47,18 @@ async function getUser(): Promise<User> {
     await db.insert(users).values({ id: userIdentifier }).execute();
   }
 
-  return {
-    id: userIdentifier,
-  };
+  return { id: userIdentifier };
 }
 
-const handler = async (req: Request) => {
+async function handler(req: Request) {
   const ip = getClientIp(req);
   const user = await getUser();
 
   try {
     const rl = await limitByIp(ip);
+
     if (!rl.success) {
-      const retryAfterSec = Math.max(
-        0,
-        Math.ceil((rl.reset - Date.now()) / 1000),
-      );
+      const retryAfterSec = Math.max(0, Math.ceil((rl.reset - Date.now()) / 1000));
       return new Response(
         JSON.stringify({
           error: "Too Many Requests",
@@ -85,45 +77,36 @@ const handler = async (req: Request) => {
       );
     }
 
-    const res = await fetchRequestHandler({
+    const response = await fetchRequestHandler({
       endpoint: "/api/trpc",
       req,
       router: appRouter,
-      createContext: async () => {
-        return createContext(user);
-      },
+      createContext: async () => createContext(user),
       onError({ error, path }) {
-        console.error("tRPC error", { path, error });
+        console.error("tRPC error:", { path, error });
       },
     });
-
-    // Attach rate limit headers for visibility
     try {
-      res.headers.set("X-RateLimit-Limit", String(rl.limit));
-      res.headers.set(
-        "X-RateLimit-Remaining",
-        String(Math.max(0, rl.remaining)),
-      );
-      res.headers.set("X-RateLimit-Reset", String(rl.reset));
-    } catch {}
+      response.headers.set("X-RateLimit-Limit", String(rl.limit));
+      response.headers.set("X-RateLimit-Remaining", String(Math.max(0, rl.remaining)));
+      response.headers.set("X-RateLimit-Reset", String(rl.reset));
+    } catch {
+      // FIX for "Empty block statement. (no-empty)":
+    }
 
-    return res;
+    return response;
   } catch (e) {
-    // If ratelimit fails (e.g., missing env), do not block API but log error
-    console.error("Rate limit check failed", e);
+    console.error("Rate limit check failed:", e);
     return fetchRequestHandler({
       endpoint: "/api/trpc",
       req,
       router: appRouter,
-      createContext: async () => {
-        return createContext(user);
-      },
+      createContext: async () => createContext(user),
       onError({ error, path }) {
-        console.error("tRPC error", { path, error });
+        console.error("tRPC error:", { path, error });
       },
     });
   }
-};
+}
 
-export const GET = handler;
-export const POST = handler;
+export { handler as GET, handler as POST };
