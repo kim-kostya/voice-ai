@@ -1,8 +1,10 @@
 "use client";
 
 import { SignedIn, SignedOut, SignInButton } from "@clerk/nextjs";
+import { ChatHistoryPopover } from "@/components/popover/ChatHistoryPopover";
+import { VolumeControlPopover } from "@/components/popover/VolumeControlPopover";
 import { Header } from "@/components/ui/Header";
-import { VoiceAIAgentContainer } from "@/components/VoiceAIAgentContainer";
+import VoiceButton from "@/components/VoiceButton";
 
 export default function Home() {
   return (
@@ -11,8 +13,10 @@ export default function Home() {
       <SignedIn>
         <Header />
         <main className="flex-1 flex flex-col items-center justify-center px-4 pb-20 pt-20">
-          <div className="flex flex-col items-center gap-6 mb-8">
-            <VoiceAIAgentContainer />
+          <VoiceButton />
+          <div className="flex items-center gap-2 mt-4">
+            <VolumeControlPopover />
+            <ChatHistoryPopover />
           </div>
         </main>
       </SignedIn>

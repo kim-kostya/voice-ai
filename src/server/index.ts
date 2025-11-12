@@ -1,7 +1,7 @@
-import { remindersRouter } from "@/server/routers/reminders";
-import { roomsRouter } from "@/server/routers/rooms";
 import { exampleRouter } from "@/server/routers/example";
 import { protectedRouter } from "@/server/routers/protected";
+import { remindersRouter } from "@/server/routers/reminders";
+import { roomsRouter } from "@/server/routers/rooms";
 import { createTRPCRouter } from "@/server/trpc";
 
 // User type for context

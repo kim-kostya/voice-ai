@@ -58,7 +58,10 @@ async function handler(req: Request) {
     const rl = await limitByIp(ip);
 
     if (!rl.success) {
-      const retryAfterSec = Math.max(0, Math.ceil((rl.reset - Date.now()) / 1000));
+      const retryAfterSec = Math.max(
+        0,
+        Math.ceil((rl.reset - Date.now()) / 1000),
+      );
       return new Response(
         JSON.stringify({
           error: "Too Many Requests",
@@ -88,7 +91,10 @@ async function handler(req: Request) {
     });
     try {
       response.headers.set("X-RateLimit-Limit", String(rl.limit));
-      response.headers.set("X-RateLimit-Remaining", String(Math.max(0, rl.remaining)));
+      response.headers.set(
+        "X-RateLimit-Remaining",
+        String(Math.max(0, rl.remaining)),
+      );
       response.headers.set("X-RateLimit-Reset", String(rl.reset));
     } catch {
       // FIX for "Empty block statement. (no-empty)":
