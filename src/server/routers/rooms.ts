@@ -13,21 +13,19 @@ export const roomsRouter = createTRPCRouter({
     .input(
       z.object({
         roomId: z.string().uuid(),
-        username: z.string(),
       }),
     )
     .query(async ({ ctx, input }) => {
-      let accessToken = await redis.get<string>(
-        `livekit:accessToken:${ctx.user.id}:${input.roomId}`,
-      );
+      const accessTokenKey = `livekit:accessToken:${ctx.auth.userId}:${input.roomId}`;
+      let accessToken = await redis.get<string>(accessTokenKey);
 
       if (!accessToken) {
         const accessTokenConfig = new AccessToken(
           liveKitApiKey,
           liveKitApiSecret,
           {
-            identity: ctx.user.id,
-            name: input.username,
+            identity: ctx.auth.userId,
+            name: ctx.user?.fullName ?? "user",
           },
         );
 
@@ -39,13 +37,9 @@ export const roomsRouter = createTRPCRouter({
         });
 
         accessToken = await accessTokenConfig.toJwt();
-        await redis.set(
-          `livekit:accessToken:${ctx.user.id}:${input.roomId}`,
-          accessToken,
-          {
-            ex: 600,
-          },
-        );
+        await redis.set(accessTokenKey, accessToken, {
+          ex: 600,
+        });
       }
 
       return {

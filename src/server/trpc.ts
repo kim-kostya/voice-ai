@@ -1,11 +1,14 @@
-import { auth } from "@clerk/nextjs/server";
+import { auth, currentUser } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 
 // Adjust this path if needed
 
 export async function createContext() {
-  return { auth: await auth() };
+  return {
+    auth: await auth(),
+    user: await currentUser(),
+  };
 }
 
 export type Context = Awaited<ReturnType<typeof createContext>>;
