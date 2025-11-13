@@ -38,15 +38,6 @@ export default function RootLayout({
         <body
           className={`${geistSans.variable} ${geistMono.variable} antialiased`}
         >
-          {/* Header with Clerk user controls */}
-          <header className="flex justify-end items-center gap-4 p-4 border-b border-gray-200">
-            <SignedOut>
-              <SignInButton />
-            </SignedOut>
-            <SignedIn>
-              <UserButton />
-            </SignedIn>
-          </header>
           <TRPCProvider>
             <LiveKitRoom>{children}</LiveKitRoom>
           </TRPCProvider>
