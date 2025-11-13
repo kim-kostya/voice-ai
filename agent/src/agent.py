@@ -81,7 +81,6 @@ def prewarm(proc: JobProcess):
   proc.userdata["vad"] = silero.VAD.load()
 
 async def entrypoint(ctx: JobContext):
-  logger.info(f"starting dev agent (speech to text) example, room: {ctx.room.name}")
   await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
 
   session = AgentSession(
