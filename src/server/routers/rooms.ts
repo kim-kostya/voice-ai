@@ -26,7 +26,8 @@ export const roomsRouter = createTRPCRouter({
           liveKitApiKey,
           liveKitApiSecret,
           {
-            identity: input.username,
+            identity: ctx.user.id,
+            name: input.username,
           },
         );
 
