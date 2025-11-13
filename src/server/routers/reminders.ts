@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/server/db";
 import { reminders } from "@/server/db/schema";
@@ -20,6 +21,25 @@ export const remindersRouter = {
           authorId: ctx.user.id,
         })
         .execute();
+    }),
+  removeReminder: protectedProcedure
+    .input(z.object({ id: z.number().int().positive() }))
+    .mutation(async ({ ctx, input }) => {
+      const result = await db
+        .select()
+        .from(reminders)
+        .where(eq(reminders.id, input.id))
+        .execute();
+
+      if (result.length === 0) {
+        throw new Error("Reminder not found");
+      }
+
+      if (result[0].authorId !== ctx.user.id) {
+        throw new Error("Unauthorized");
+      }
+
+      await db.delete(reminders).where(eq(reminders.id, input.id)).execute();
     }),
   getReminders: protectedProcedure.query(async () => {
     const result = await db.select().from(reminders).execute();

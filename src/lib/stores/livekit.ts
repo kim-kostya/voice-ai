@@ -10,17 +10,26 @@ export type AgentState =
   | "disconnected"
   | "failed";
 
+export interface ChatMessage {
+  id: string;
+  message: string;
+  timestamp: number;
+  from: "user" | "agent";
+}
+
 export type LiveKitState = {
   room: Room | undefined;
   roomState: RoomState;
   agentState: AgentState;
   volume: number;
   isAudioEnabled: boolean;
+  chatMessages: ChatMessage[];
   setRoom: (room: Room) => void;
   setRoomState: (state: RoomState) => void;
   setAgentState: (state: AgentState) => void;
   setVolume: (volume: number) => void;
   setAudioEnabled: (enabled: boolean) => void;
+  setChatMessages: (messages: ChatMessage[]) => void;
 };
 
 export const useLiveKit = create<LiveKitState>((set) => ({
@@ -29,9 +38,11 @@ export const useLiveKit = create<LiveKitState>((set) => ({
   agentState: "disconnected",
   volume: 50,
   isAudioEnabled: false,
+  chatMessages: [],
   setRoom: (room) => set({ room }),
   setRoomState: (state) => set({ roomState: state }),
   setAgentState: (state) => set({ agentState: state }),
   setVolume: (volume) => set({ volume }),
   setAudioEnabled: (enabled) => set({ isAudioEnabled: enabled }),
+  setChatMessages: (messages) => set({ chatMessages: messages }),
 }));

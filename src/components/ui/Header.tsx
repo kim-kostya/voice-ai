@@ -1,4 +1,6 @@
+import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
 import { Settings } from "lucide-react";
+import type React from "react";
 import { Button } from "@/components/ui/Button";
 
 export function Header() {
@@ -14,10 +16,12 @@ export function Header() {
         <Button variant="ghost" size="icon">
           <Settings className="w-5 h-5" />
         </Button>
-        <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-teal-600 rounded-full" />
-          <span className="text-sm text-muted-foreground">Voice Ready</span>
-        </div>
+        <SignedOut>
+          <SignInButton />
+        </SignedOut>
+        <SignedIn>
+          <UserButton />
+        </SignedIn>
       </div>
     </header>
   );

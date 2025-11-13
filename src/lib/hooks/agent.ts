@@ -1,7 +1,7 @@
 "use client";
 
 import { useRoomContext } from "@livekit/components-react";
-import { useEffect } from "react";
+import { type DependencyList, useEffect } from "react";
 import SuperJSON from "superjson";
 import type { ZodTypeAny, z } from "zod";
 import type { GeoLocation } from "@/lib/location";
@@ -10,10 +10,10 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
   rpcMethodName: string,
   inputSchema: T,
   callback: (data: z.infer<typeof inputSchema>) => Promise<AgentRPCMessage>,
+  deps?: DependencyList,
 ) {
   const roomContext = useRoomContext();
 
-  // biome-ignore lint/correctness/useExhaustiveDependencies: no need to add roomContext to dependencies
   useEffect(() => {
     if (!roomContext) return;
 
@@ -39,12 +39,13 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
         } as AgentRPCError);
       }
     });
-  }, [rpcMethodName, roomContext, callback]);
 
-  return () => {
-    console.log(`[LiveKit RPC] Unregistering ${rpcMethodName} RPC method`);
-    roomContext.unregisterRpcMethod(rpcMethodName);
-  };
+    return () => {
+      console.log(`[LiveKit RPC] Unregistering ${rpcMethodName} RPC method`);
+      roomContext.unregisterRpcMethod(rpcMethodName);
+    };
+    // biome-ignore lint/correctness/useExhaustiveDependencies: it's passed as parameter
+  }, deps);
 }
 
 export interface AgentRPCMessageBase {
