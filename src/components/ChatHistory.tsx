@@ -15,7 +15,7 @@ export default function ChatHistory({
   let visibleChatMessages = [];
 
   if (inverse) {
-    visibleChatMessages = chatMessages.reverse();
+    visibleChatMessages = chatMessages.toReversed();
     if (maxMessageCount > 0) {
       visibleChatMessages = visibleChatMessages.slice(0, maxMessageCount);
     }
