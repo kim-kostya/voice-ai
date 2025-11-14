@@ -1,8 +1,8 @@
 // src/server/routers/calendar.ts
 
 import { z } from "zod";
+import { createSimpleEvent, listUpcomingEvents } from "../google/calendar";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { listUpcomingEvents, createSimpleEvent } from "../google/calendar";
 
 // NOTE: for now we pass accessToken from the client.
 // Later, you can change this to read from ctx (e.g. from DB/Clerk user metadata).
@@ -11,7 +11,7 @@ export const calendarRouter = createTRPCRouter({
     .input(
       z.object({
         accessToken: z.string(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const events = await listUpcomingEvents(input.accessToken);
@@ -26,7 +26,7 @@ export const calendarRouter = createTRPCRouter({
         description: z.string().optional(),
         start: z.string(), // ISO string
         end: z.string(), // ISO string
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const event = await createSimpleEvent({
