@@ -63,6 +63,7 @@
     "dotenv": "^17.2.3",
     "embla-carousel-react": "8.5.1",
     "geist": "^1.5.1",
+    "googleapis": "^166.0.0",
     "input-otp": "1.4.1",
     "livekit-client": "^2.15.10",
     "livekit-server-sdk": "^2.14.0",
