@@ -1,31 +1,50 @@
-import { DataTopic } from "@livekit/components-core";
-import { type ReceivedChatMessage, useChat } from "@livekit/components-react";
-import { ParticipantKind } from "livekit-client";
 import { useRef } from "react";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { type ChatMessage, useLiveKit } from "@/lib/stores/livekit";
 
-export default function ChatHistory() {
+export default function ChatHistory({
+  inverse = false,
+  maxMessageCount = 0,
+}: {
+  inverse: boolean;
+  maxMessageCount: number;
+}) {
   const scrollRef = useRef<HTMLDivElement>(null);
-  const { chatMessages } = useChat({
-    channelTopic: DataTopic.TRANSCRIPTION,
-  });
+  const { chatMessages } = useLiveKit();
+
+  let visibleChatMessages = [];
+
+  if (inverse) {
+    visibleChatMessages = chatMessages.toReversed();
+    if (maxMessageCount > 0) {
+      visibleChatMessages = visibleChatMessages.slice(0, maxMessageCount);
+    }
+  } else {
+    visibleChatMessages = chatMessages;
+    if (maxMessageCount > 0) {
+      visibleChatMessages = visibleChatMessages.slice(
+        visibleChatMessages.length - maxMessageCount,
+        visibleChatMessages.length,
+      );
+    }
+  }
 
   return (
-    <ScrollArea className="flex-1 px-4 py-6" ref={scrollRef}>
+    <ScrollArea className="flex-1 px-4 py-6 h-100" ref={scrollRef}>
       <div className="max-w-3xl mx-auto space-y-6">
-        {chatMessages.map((message: ReceivedChatMessage) => (
+        {visibleChatMessages.map((message: ChatMessage) => (
           <div
             key={message.id}
-            className={`flex gap-3 ${message.from?.kind !== ParticipantKind.AGENT ? "justify-end" : "justify-start"}`}
+            className={`flex gap-3 ${message.from === "user" ? "justify-end" : "justify-start"}`}
           >
-            {message.from?.kind === ParticipantKind.AGENT && (
+            {message.from === "agent" && (
               <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
                 <div className="w-4 h-4 border-2 border-white rounded-sm" />
               </div>
             )}
             <div
               className={`rounded-2xl px-4 py-3 max-w-[70%] ${
-                message.from?.kind !== ParticipantKind.AGENT
+                message.from === "user"
                   ? "bg-teal-600 text-white"
                   : "bg-muted text-foreground"
               }`}
@@ -38,7 +57,7 @@ export default function ChatHistory() {
                 })}
               </span>
             </div>
-            {message.from?.kind !== ParticipantKind.AGENT && (
+            {message.from === "user" && (
               <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
                 <span className="text-sm font-semibold">U</span>
               </div>

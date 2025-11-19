@@ -63,7 +63,7 @@ function VoiceButtonIcon({
   agentState: string;
 }) {
   if (roomState === "connecting" || agentState === "connecting") {
-    return <LoadingSpinner className="w-8 h-8 text-white" />;
+    return <LoadingSpinner className="w-16 h-16 text-white" />;
   }
 
   if (
