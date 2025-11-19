@@ -9,12 +9,7 @@ import { remindersRouter } from "@/server/routers/reminders";
 import { roomsRouter } from "@/server/routers/rooms"; // remove if it doesn't exist
 import { createTRPCRouter } from "@/server/trpc";
 
-// Optional: User type for context
-export type User = {
-  id: string;
-};
-
-// Root app router — must exist only once
+// Combine all routers here
 export const appRouter = createTRPCRouter({
   example: exampleRouter,
   reminders: remindersRouter,
