@@ -1,4 +1,4 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { z } from "zod";
 import { db } from "@/server/db";
 import { reminders } from "@/server/db/schema";
@@ -18,7 +18,7 @@ export const remindersRouter = {
         .values({
           text: input.text,
           time: input.time.toISOString(),
-          authorId: ctx.user.id,
+          authorId: ctx.auth.userId,
         })
         .execute();
     }),
@@ -28,21 +28,30 @@ export const remindersRouter = {
       const result = await db
         .select()
         .from(reminders)
-        .where(eq(reminders.id, input.id))
+        .where(
+          and(
+            eq(reminders.id, input.id),
+            eq(reminders.authorId, ctx.auth.userId),
+          ),
+        )
         .execute();
 
       if (result.length === 0) {
         throw new Error("Reminder not found");
       }
 
-      if (result[0].authorId !== ctx.user.id) {
+      if (result[0].authorId !== ctx.auth.userId) {
         throw new Error("Unauthorized");
       }
 
       await db.delete(reminders).where(eq(reminders.id, input.id)).execute();
     }),
-  getReminders: protectedProcedure.query(async () => {
-    const result = await db.select().from(reminders).execute();
+  getReminders: protectedProcedure.query(async ({ ctx }) => {
+    const result = await db
+      .select()
+      .from(reminders)
+      .where(eq(reminders.authorId, ctx.auth.userId))
+      .execute();
     return result.map((reminder) => ({
       id: reminder.id,
       text: reminder.text,
