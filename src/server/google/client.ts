@@ -1,8 +1,5 @@
-// src/server/google/client.ts
-
 import { google } from "googleapis";
 
-// Create an OAuth client using env vars
 export function createOAuthClient() {
   if (
     !process.env.GOOGLE_CLIENT_ID ||
