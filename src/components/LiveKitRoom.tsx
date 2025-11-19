@@ -59,7 +59,6 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
         setRoomState("connecting");
         const roomData = await trpcUtils.rooms.getRoomData.fetch({
           roomId: roomId as string,
-          username: "user",
         });
         await room.connect(roomData.wsUrl, roomData.token);
       } catch (error) {
@@ -80,7 +79,7 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
       setTimeout(connect, 10000, abortController.signal);
     };
 
-    const onChatMessage = (event: ReceivedChatMessage) => {};
+    const onChatMessage = (_: ReceivedChatMessage) => {};
 
     room.on(RoomEvent.Connected, onConnected);
     room.on(RoomEvent.Disconnected, onDisconnected);

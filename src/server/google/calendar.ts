@@ -1,5 +1,3 @@
-// src/server/google/calendar.ts
-
 import { google } from "googleapis";
 import { createOAuthClient } from "./client";
 
