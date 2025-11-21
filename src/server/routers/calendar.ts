@@ -1,41 +1,46 @@
-// src/server/routers/calendar.ts
-
 import { z } from "zod";
-import { createSimpleEvent, listUpcomingEvents } from "../google/calendar";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
+import { db } from "@/server/db";
+import { events } from "@/server/db/schema";
+import { eq } from "drizzle-orm";
 
-// NOTE: for now we pass accessToken from the client.
-// Later, you can change this to read from ctx (e.g. from DB/Clerk user metadata).
 export const calendarRouter = createTRPCRouter({
-  list: protectedProcedure
+  // Get all events for logged-in user
+  getEvents: protectedProcedure.query(async ({ ctx }) => {
+    return db
+      .select()
+      .from(events)
+      .where(eq(events.userId, ctx.user!.id));
+  }),
+
+  // Add new event
+  addEvent: protectedProcedure
     .input(
       z.object({
-        accessToken: z.string(),
-      }),
+        title: z.string().min(1),
+        date: z.string(),
+        time: z.string(),
+      })
     )
-    .query(async ({ input }) => {
-      const events = await listUpcomingEvents(input.accessToken);
-      return events;
+    .mutation(async ({ ctx, input }) => {
+      await db.insert(events).values({
+        userId: ctx.user!.id,
+        title: input.title,
+        date: input.date,
+        time: input.time,
+      });
+      return { success: true };
     }),
 
-  create: protectedProcedure
+  // Delete event
+  deleteEvent: protectedProcedure
     .input(
       z.object({
-        accessToken: z.string(),
-        summary: z.string().min(1),
-        description: z.string().optional(),
-        start: z.string(), // ISO string
-        end: z.string(), // ISO string
-      }),
+        id: z.number(),
+      })
     )
     .mutation(async ({ input }) => {
-      const event = await createSimpleEvent({
-        accessToken: input.accessToken,
-        summary: input.summary,
-        description: input.description,
-        start: input.start,
-        end: input.end,
-      });
-      return event;
+      await db.delete(events).where(eq(events.id, input.id));
+      return { success: true };
     }),
 });

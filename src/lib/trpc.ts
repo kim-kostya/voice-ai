@@ -1,15 +1,14 @@
 import { createTRPCReact } from "@trpc/react-query";
 import type { AppRouter } from "@/server";
 
-export const trpc = createTRPCReact<AppRouter>();
+export const api = createTRPCReact<AppRouter>();
+
+// Backwards compatibility so old code works
+export const trpc = api;
 
 function getBaseUrl() {
-  if (typeof window !== "undefined") {
-    return "";
-  }
-  if (process.env.VERCEL_URL) {
-    return `https://${process.env.VERCEL_URL}`;
-  }
+  if (typeof window !== "undefined") return "";
+  if (process.env.VERCEL_URL) return `https://${process.env.VERCEL_URL}`;
   return `http://localhost:${process.env.PORT ?? 3000}`;
 }
 

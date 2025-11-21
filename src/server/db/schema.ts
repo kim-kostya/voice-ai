@@ -1,14 +1,22 @@
-import { int, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
 export const users = sqliteTable("users", {
   id: text("id"),
 });
 
 export const reminders = sqliteTable("reminders", {
-  id: int("id").primaryKey({ autoIncrement: true }),
+  id: integer("id").primaryKey({ autoIncrement: true }),
   authorId: text("author_id")
     .notNull()
     .references(() => users.id),
   text: text("text").notNull(),
   time: text("time").notNull(),
+});
+
+export const events = sqliteTable("events", {
+  id: integer("id").primaryKey({ autoIncrement: true }),
+  userId: text("user_id").notNull(),
+  title: text("title").notNull(),
+  date: text("date").notNull(), // "2025-11-22"
+  time: text("time").notNull(), // "14:00"
 });

@@ -1,17 +1,15 @@
-// src/server/index.ts
-
-import { calendarRouter } from "@/server/routers/calendar"; // Google Calendar
+import { createTRPCRouter } from "@/server/trpc";
 
 import { remindersRouter } from "@/server/routers/reminders";
 import { roomsRouter } from "@/server/routers/rooms";
-import { createTRPCRouter } from "@/server/trpc";
+import { calendarRouter } from "@/server/routers/calendar";
+import { googleCalendarRouter } from "@/server/routers/googleCalendar"; // optional Google Calendar router
 
-// Combine all routers here
 export const appRouter = createTRPCRouter({
   reminders: remindersRouter,
-  rooms: roomsRouter, // delete if file missing
-  calendar: calendarRouter, // added Google Calendar router
+  rooms: roomsRouter,
+  calendar: calendarRouter,          // Local DB calendar
+  googleCalendar: googleCalendarRouter, // Google Calendar support
 });
 
-// TRPC type
 export type AppRouter = typeof appRouter;
