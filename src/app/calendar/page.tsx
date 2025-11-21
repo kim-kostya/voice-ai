@@ -3,7 +3,6 @@
 import { useState } from "react";
 import { api } from "@/lib/trpc";
 
-// Event type from your database schema
 type CalendarEvent = {
   id: number;
   userId: string;
@@ -13,10 +12,8 @@ type CalendarEvent = {
 };
 
 export default function CalendarPage() {
-  // Fetch local events
   const { data: events, refetch } = api.calendar.getEvents.useQuery();
 
-  // Add event mutation
   const addEvent = api.calendar.addEvent.useMutation({
     onSuccess: () => {
       refetch();
@@ -26,12 +23,10 @@ export default function CalendarPage() {
     },
   });
 
-  // Delete event mutation
   const deleteEvent = api.calendar.deleteEvent.useMutation({
     onSuccess: () => refetch(),
   });
 
-  // Form state
   const [title, setTitle] = useState("");
   const [date, setDate] = useState("");
   const [time, setTime] = useState("");
@@ -45,7 +40,6 @@ export default function CalendarPage() {
     <div className="p-6 max-w-xl mx-auto">
       <h1 className="text-2xl font-bold mb-4">My Calendar</h1>
 
-      {/* Add Event Form */}
       <div className="border p-4 rounded mb-6 bg-gray-50">
         <input
           className="border p-2 w-full mb-2 rounded"
@@ -69,6 +63,7 @@ export default function CalendarPage() {
         />
 
         <button
+          type="button"
           onClick={handleAdd}
           className="bg-blue-600 text-white px-4 py-2 rounded w-full"
         >
@@ -76,7 +71,6 @@ export default function CalendarPage() {
         </button>
       </div>
 
-      {/* Event List */}
       <div>
         <h2 className="text-xl font-semibold mb-2">Upcoming Events</h2>
 
@@ -98,6 +92,7 @@ export default function CalendarPage() {
               </div>
 
               <button
+                type="button"
                 onClick={() => deleteEvent.mutate({ id: ev.id })}
                 className="bg-red-500 text-white px-3 py-1 rounded"
               >

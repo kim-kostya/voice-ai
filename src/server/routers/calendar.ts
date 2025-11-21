@@ -1,16 +1,15 @@
+import { eq } from "drizzle-orm";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
+
 import { db } from "@/server/db";
 import { events } from "@/server/db/schema";
-import { eq } from "drizzle-orm";
+import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
 
 export const calendarRouter = createTRPCRouter({
   // Get all events for logged-in user
   getEvents: protectedProcedure.query(async ({ ctx }) => {
-    return db
-      .select()
-      .from(events)
-      .where(eq(events.userId, ctx.user!.id));
+    if (!ctx.user) return [];
+    return db.select().from(events).where(eq(events.userId, ctx.user.id));
   }),
 
   // Add new event
@@ -20,15 +19,18 @@ export const calendarRouter = createTRPCRouter({
         title: z.string().min(1),
         date: z.string(),
         time: z.string(),
-      })
+      }),
     )
     .mutation(async ({ ctx, input }) => {
+      if (!ctx.user) return;
+
       await db.insert(events).values({
-        userId: ctx.user!.id,
+        userId: ctx.user.id,
         title: input.title,
         date: input.date,
         time: input.time,
       });
+
       return { success: true };
     }),
 
@@ -37,7 +39,7 @@ export const calendarRouter = createTRPCRouter({
     .input(
       z.object({
         id: z.number(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       await db.delete(events).where(eq(events.id, input.id));

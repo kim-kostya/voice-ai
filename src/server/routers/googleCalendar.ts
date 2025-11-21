@@ -1,5 +1,6 @@
-import { z } from "zod";
 import { google } from "googleapis";
+import { z } from "zod";
+
 import { createTRPCRouter, protectedProcedure } from "@/server/trpc";
 
 export const googleCalendarRouter = createTRPCRouter({
@@ -7,7 +8,7 @@ export const googleCalendarRouter = createTRPCRouter({
     .input(
       z.object({
         accessToken: z.string(),
-      })
+      }),
     )
     .query(async ({ input }) => {
       const oauth = new google.auth.OAuth2();
@@ -32,7 +33,7 @@ export const googleCalendarRouter = createTRPCRouter({
         summary: z.string(),
         date: z.string(),
         time: z.string(),
-      })
+      }),
     )
     .mutation(async ({ input }) => {
       const oauth = new google.auth.OAuth2();
