@@ -1,5 +1,5 @@
 import { calendarRouter } from "@/server/routers/calendar";
-import { googleCalendarRouter } from "@/server/routers/googleCalendar";
+import { googleCalendarRouter } from "@/server/routers/googleCalendar"; // optional Google Calendar router
 import { remindersRouter } from "@/server/routers/reminders";
 import { roomsRouter } from "@/server/routers/rooms";
 import { createTRPCRouter } from "@/server/trpc";
