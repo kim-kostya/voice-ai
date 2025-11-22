@@ -2,9 +2,9 @@
 
 import { ChatHistoryPopover } from "@/components/popover/ChatHistoryPopover";
 import { VolumeControlPopover } from "@/components/popover/VolumeControlPopover";
+import { CalendarComponent } from "@/components/ui/CalendarComponent";
 import VoiceButton from "@/components/VoiceButton";
 import { VoiceTranscriptionHandler } from "@/components/VoiceTranscriptionHandler";
-import { CalendarComponent } from "@/components/ui/CalendarComponent";
 
 export default function Home() {
   return (
@@ -15,7 +15,7 @@ export default function Home() {
         <ChatHistoryPopover />
         <VoiceTranscriptionHandler />
       </div>
-       {/* Calendar Section */}
+      {/* Calendar Section */}
       <div className="w-full max-w-md mt-10">
         <CalendarComponent />
       </div>

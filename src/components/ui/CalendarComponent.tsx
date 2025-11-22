@@ -2,14 +2,14 @@
 
 import * as React from "react";
 import { Calendar } from "@/components/ui/calendar";
-import { api } from "@/trpc/react";
-import { cn } from "@/lib/utils";
 import {
   Tooltip,
-  TooltipTrigger,
   TooltipContent,
   TooltipProvider,
+  TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { cn } from "@/lib/utils";
+import { api } from "@/trpc/react";
 
 export function CalendarComponent({ className }: { className?: string }) {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
@@ -17,11 +17,18 @@ export function CalendarComponent({ className }: { className?: string }) {
   // Fetch reminders
   const reminders = api.reminders.getReminders.useQuery();
 
+  // Correct typing for your SQLite reminders
+  type ReminderEvent = {
+    id: number;
+    text: string;
+    time: string;
+  };
+
   // Group events by yyyy-mm-dd
   const eventsByDate = React.useMemo(() => {
     if (!reminders.data) return {};
 
-    const map: Record<string, any[]> = {};
+    const map: Record<string, ReminderEvent[]> = {};
 
     reminders.data.forEach((event) => {
       const d = new Date(event.time);
@@ -58,7 +65,6 @@ export function CalendarComponent({ className }: { className?: string }) {
           <div className="absolute inset-0 pointer-events-none">
             {Object.entries(eventsByDate).map(([key, events]) => {
               const dotDate = new Date(key);
-              const day = dotDate.getDate();
 
               return (
                 <Tooltip key={key}>
@@ -66,7 +72,9 @@ export function CalendarComponent({ className }: { className?: string }) {
                     <div
                       className="absolute w-5 h-5"
                       style={{
-                        top: `calc(((${Math.floor((dotDate.getDate() + dotDate.getDay()) / 7)}) * 38px) + 70px)`,
+                        top: `calc(((${Math.floor(
+                          (dotDate.getDate() + dotDate.getDay()) / 7
+                        )}) * 38px) + 70px)`,
                         left: `calc(((${dotDate.getDay()}) * 38px) + 14px)`,
                       }}
                     >
