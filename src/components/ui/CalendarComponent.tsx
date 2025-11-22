@@ -11,28 +11,28 @@ import {
 import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 
+type ReminderEvent = {
+  id: number;
+  text: string;
+  time: Date;
+};
+
 export function CalendarComponent({ className }: { className?: string }) {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
-  // Fetch reminders
+  // Fetch reminders (time = Date)
   const reminders = api.reminders.getReminders.useQuery();
 
-  // Correct typing for your SQLite reminders
-  type ReminderEvent = {
-    id: number;
-    text: string;
-    time: string;
-  };
-
-  // Group events by yyyy-mm-dd
+  // Group events by day
   const eventsByDate = React.useMemo(() => {
-    if (!reminders.data) return {};
+    if (!reminders.data) return {} as Record<string, ReminderEvent[]>;
 
     const map: Record<string, ReminderEvent[]> = {};
 
-    reminders.data.forEach((event) => {
+    reminders.data.forEach((event: ReminderEvent) => {
       const d = new Date(event.time);
       const key = d.toISOString().split("T")[0];
+
       if (!map[key]) map[key] = [];
       map[key].push(event);
     });
@@ -40,7 +40,7 @@ export function CalendarComponent({ className }: { className?: string }) {
     return map;
   }, [reminders.data]);
 
-  // For the selected day
+  // Events for selected day
   const eventsForSelectedDate = React.useMemo(() => {
     if (!date) return [];
     const key = date.toISOString().split("T")[0];
@@ -52,7 +52,6 @@ export function CalendarComponent({ className }: { className?: string }) {
       <div className={cn("rounded-md border p-4", className)}>
         <h2 className="text-lg font-semibold mb-4">Calendar</h2>
 
-        {/* Calendar */}
         <div className="relative">
           <Calendar
             mode="single"
@@ -72,13 +71,15 @@ export function CalendarComponent({ className }: { className?: string }) {
                     <div
                       className="absolute w-5 h-5"
                       style={{
-                        top: `calc(((${Math.floor(
-                          (dotDate.getDate() + dotDate.getDay()) / 7
-                        )}) * 38px) + 70px)`,
+                        top: `calc(((${(
+                          (dotDate.getDate() +
+                            dotDate.getDay() +
+                            6) /
+                          7
+                        ).toFixed(0)}) * 38px) + 70px)`,
                         left: `calc(((${dotDate.getDay()}) * 38px) + 14px)`,
                       }}
                     >
-                      {/* Dot */}
                       <div className="w-2 h-2 bg-blue-500 rounded-full mx-auto" />
                     </div>
                   </TooltipTrigger>
@@ -102,7 +103,7 @@ export function CalendarComponent({ className }: { className?: string }) {
           </div>
         </div>
 
-        {/* List under the calendar */}
+        {/* Event List Under Calendar */}
         <div className="mt-6">
           <h3 className="text-md font-semibold">
             Events on {date?.toDateString()}:
@@ -119,7 +120,7 @@ export function CalendarComponent({ className }: { className?: string }) {
                 >
                   <p className="font-medium">{event.text}</p>
                   <p className="text-sm text-muted-foreground">
-                    {new Date(event.time).toLocaleTimeString([], {
+                    {event.time.toLocaleTimeString([], {
                       hour: "2-digit",
                       minute: "2-digit",
                     })}
