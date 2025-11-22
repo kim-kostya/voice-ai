@@ -20,10 +20,10 @@ type ReminderEvent = {
 export function CalendarComponent({ className }: { className?: string }) {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
-  // Fetch reminders (time = Date)
+  // Fetch reminders
   const reminders = api.reminders.getReminders.useQuery();
 
-  // Group events by day
+  // Group events by yyyy-mm-dd
   const eventsByDate = React.useMemo(() => {
     if (!reminders.data) return {} as Record<string, ReminderEvent[]>;
 
@@ -40,7 +40,7 @@ export function CalendarComponent({ className }: { className?: string }) {
     return map;
   }, [reminders.data]);
 
-  // Events for selected day
+  // Events for selected date
   const eventsForSelectedDate = React.useMemo(() => {
     if (!date) return [];
     const key = date.toISOString().split("T")[0];
@@ -60,7 +60,7 @@ export function CalendarComponent({ className }: { className?: string }) {
             className="rounded-md border shadow-sm"
           />
 
-          {/* Dots overlay */}
+          {/* Dots Overlay */}
           <div className="absolute inset-0 pointer-events-none">
             {Object.entries(eventsByDate).map(([key, events]) => {
               const dotDate = new Date(key);
@@ -72,12 +72,9 @@ export function CalendarComponent({ className }: { className?: string }) {
                       className="absolute w-5 h-5"
                       style={{
                         top: `calc(((${(
-                          (dotDate.getDate() +
-                            dotDate.getDay() +
-                            6) /
-                          7
+                          (dotDate.getDate() + dotDate.getDay()) / 7
                         ).toFixed(0)}) * 38px) + 70px)`,
-                        left: `calc(((${dotDate.getDay()}) * 38px) + 14px)`,
+                        left: `calc((${dotDate.getDay()}) * 38px + 14px)`,
                       }}
                     >
                       <div className="w-2 h-2 bg-blue-500 rounded-full mx-auto" />
