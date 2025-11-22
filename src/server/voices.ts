@@ -3,6 +3,8 @@ export interface Voice {
   supportedLanguages: string[];
 }
 
+export const DEFAULT_VOICE_ID = "WAhoMTNdLdMoq1j3wf3I";
+
 export const voices: { [key: string]: Voice } = {
   WAhoMTNdLdMoq1j3wf3I: {
     displayName: "Hope",
