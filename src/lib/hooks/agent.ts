@@ -1,7 +1,7 @@
 "use client";
 
-import { useRoomContext } from "@livekit/components-react";
-import { type DependencyList, useEffect } from "react";
+import { useRoomContext, useVoiceAssistant } from "@livekit/components-react";
+import { type DependencyList, useCallback, useEffect } from "react";
 import SuperJSON from "superjson";
 import type { ZodTypeAny, z } from "zod";
 import type { GeoLocation } from "@/lib/location";
@@ -46,6 +46,40 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
     };
     // biome-ignore lint/correctness/useExhaustiveDependencies: it's passed as parameter
   }, deps);
+}
+
+export function useAgentRemoteRpcMethod<
+  TInput,
+  TOutputSchema extends ZodTypeAny,
+>(
+  name: string,
+  outputSchema: TOutputSchema,
+): (input: TInput) => Promise<z.infer<TOutputSchema>> {
+  const roomContext = useRoomContext();
+  const { agent } = useVoiceAssistant();
+
+  // biome-ignore lint/correctness/useExhaustiveDependencies: no need to recalculate on roomContext or outputSchema change
+  return useCallback<z.infer<TOutputSchema>>(
+    async (input: TInput) => {
+      const payload = SuperJSON.stringify(input);
+      const response = await roomContext.localParticipant.performRpc({
+        method: name,
+        payload,
+        destinationIdentity: agent?.identity ?? "agent",
+      });
+      const parsedResponse = SuperJSON.parse(response);
+      const validatedResponse = outputSchema.safeParse(parsedResponse);
+
+      if (!validatedResponse.success) {
+        throw new Error(
+          `Invalid response from ${name}: ${JSON.stringify(validatedResponse.error)}`,
+        );
+      }
+
+      return validatedResponse.data;
+    },
+    [name, agent?.identity],
+  );
 }
 
 export interface AgentRPCMessageBase {
