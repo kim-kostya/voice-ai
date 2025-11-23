@@ -36,7 +36,7 @@ class DevAgent(Agent):
         model="openai/gpt-4.1-nano"
       ),
       tts=elevenlabs.TTS(
-        voice_id="ODq5zmih8GrVes37Dizd",
+        voice_id="WAhoMTNdLdMoq1j3wf3I",
         model="eleven_multilingual_v2"
       )
     )
@@ -95,6 +95,12 @@ async def entrypoint(ctx: JobContext):
     req = json.loads(data.payload)
     session.input.set_audio_enabled(req["enabled"])
     session.output.set_audio_enabled(req["enabled"])
+
+  @ctx.room.local_participant.register_rpc_method("set_voice")
+  async def set_voice(data: RpcInvocationData) -> None:
+    req = json.loads(data.payload)
+    new_tts = elevenlabs.TTS(voice_id=req["voice_id"], model="eleven_multilingual_v2")
+    session._tts = new_tts
 
   await session.start(
     agent=DevAgent(),
