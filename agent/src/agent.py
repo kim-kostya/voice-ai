@@ -86,7 +86,8 @@ async def entrypoint(ctx: JobContext):
 
   session = AgentSession(
     vad=ctx.proc.userdata["vad"],
-    use_tts_aligned_transcript=True
+    use_tts_aligned_transcript=True,
+    preemptive_generation=True,
   )
 
   @ctx.room.local_participant.register_rpc_method("set_audio_output")
