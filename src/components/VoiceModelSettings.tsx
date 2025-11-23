@@ -23,10 +23,22 @@ export default function VoiceModelSettings() {
     z.object({}),
   );
 
-  const setSelectedVoiceId = async (voiceId: string) => {
-    setVoiceId(voiceId);
-    await setRemoteVoiceId.mutateAsync({ voiceId });
-    await setAgentVoice({ voiceId });
+  const setSelectedVoiceId = async (newVoiceId: string) => {
+    const prevVoiceId = voiceId;
+    setVoiceId(newVoiceId);
+    await setRemoteVoiceId.mutateAsync({ voiceId: newVoiceId });
+    try {
+      await setAgentVoice({ voiceId: newVoiceId });
+    } catch (error) {
+      console.error("Failed to set agent voice:", error);
+      setVoiceId(prevVoiceId);
+
+      if (!prevVoiceId) {
+        return;
+      }
+
+      await setRemoteVoiceId.mutateAsync({ voiceId: prevVoiceId });
+    }
   };
 
   if (!voices) return <div>Loading...</div>;
