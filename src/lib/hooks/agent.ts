@@ -49,34 +49,28 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
 }
 
 export function useAgentRemoteRpcMethod<
-  TInput,
+  TInputSchema extends ZodTypeAny,
   TOutputSchema extends ZodTypeAny,
 >(
   name: string,
+  inputSchema: TInputSchema,
   outputSchema: TOutputSchema,
-): (input: TInput) => Promise<z.infer<TOutputSchema>> {
+): (input: z.infer<TInputSchema>) => Promise<z.infer<TOutputSchema>> {
   const roomContext = useRoomContext();
   const { agent } = useVoiceAssistant();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: no need to recalculate on roomContext or outputSchema change
   return useCallback<z.infer<TOutputSchema>>(
-    async (input: TInput) => {
-      const payload = SuperJSON.stringify(input);
+    async (input: z.infer<TInputSchema>) => {
+      const validatedInput = inputSchema.parse(input);
+      const payload = SuperJSON.stringify(validatedInput);
       const response = await roomContext.localParticipant.performRpc({
         method: name,
         payload,
         destinationIdentity: agent?.identity ?? "agent",
       });
       const parsedResponse = SuperJSON.parse(response);
-      const validatedResponse = outputSchema.safeParse(parsedResponse);
-
-      if (!validatedResponse.success) {
-        throw new Error(
-          `Invalid response from ${name}: ${JSON.stringify(validatedResponse.error)}`,
-        );
-      }
-
-      return validatedResponse.data;
+      return outputSchema.parse(parsedResponse);
     },
     [name, agent?.identity],
   );
