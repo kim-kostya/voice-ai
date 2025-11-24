@@ -108,12 +108,8 @@ class AgentRPCClient:
 
     return RemindersWithIdRPCMessage(reminders=response['reminders'])
 
-  async def add_reminder(self, reminder: Reminder):
-    response = await self.__perform_rpc_call("add_reminder", {
-      "id": reminder.id,
-      "text": reminder.text,
-      "time": reminder.time.isoformat()
-    })
+  async def add_reminder(self, reminder: dict):
+    response = await self.__perform_rpc_call("add_reminder", reminder)
 
     if 'type' not in response or response['type'] != 'success':
       raise RPCError("Invalid RPC response")
