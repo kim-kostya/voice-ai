@@ -112,7 +112,11 @@ class DevAgent(Agent):
       print(e)
       return "Unable to add reminder"
 
-  @function_tool(description="Remove reminder from calendar")
+  @function_tool(description="""
+  Remove reminder from calendar
+  
+  @param reminder_id: Reminder id to remove (to get reminder id, use get_reminders function)
+  """)
   async def remove_reminder(self, context: RunContext, reminder_id: str):
     try:
       context.disallow_interruptions()
