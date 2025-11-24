@@ -80,6 +80,9 @@ class DevAgent(Agent):
 def prewarm(proc: JobProcess):
   proc.userdata["vad"] = silero.VAD.load()
 
+def greeting(session: AgentSession):
+  session.say("Hello, I am Respona. How can I help you today?", allow_interruptions=False)
+
 async def entrypoint(ctx: JobContext):
   logger.info(f"starting dev agent (speech to text) example, room: {ctx.room.name}")
   await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
@@ -89,6 +92,8 @@ async def entrypoint(ctx: JobContext):
     use_tts_aligned_transcript=True,
     preemptive_generation=True,
   )
+
+  ctx.room.on('connected', lambda: greeting(session))
 
   @ctx.room.local_participant.register_rpc_method("set_audio_output")
   async def set_audio_output(data: RpcInvocationData) -> None:
