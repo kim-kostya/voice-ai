@@ -26,7 +26,7 @@ load_dotenv()
 logger = logging.getLogger("transcriber")
 
 
-class DevAgent(Agent):
+class ResponaAgent(Agent):
   def __init__(self):
     super().__init__(
       instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner.",
@@ -149,7 +149,7 @@ async def entrypoint(ctx: JobContext):
     session.output.set_audio_enabled(req["enabled"])
 
   await session.start(
-    agent=DevAgent(),
+    agent=ResponaAgent(),
     room=ctx.room,
     room_input_options=RoomInputOptions(
       close_on_disconnect=True,
