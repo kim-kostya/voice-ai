@@ -9,7 +9,7 @@ from livekit.agents import (
   JobContext,
   RoomOutputOptions,
   WorkerOptions,
-  cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess,
+  cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess, llm,
 )
 
 from livekit.plugins import openai
@@ -18,7 +18,9 @@ from livekit.plugins import elevenlabs
 from livekit.plugins import silero
 from livekit.rtc import RpcInvocationData
 
-from rpc import AgentRPCClient, Reminder
+from rpc import AgentRPCClient
+from src.memory import save_memory, search_memory
+from src.userdata import ResponaUserData
 from weather import get_current_weather_by_coords
 
 load_dotenv()
@@ -40,6 +42,23 @@ class ResponaAgent(Agent):
         model="eleven_multilingual_v2"
       )
     )
+
+  async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
+    await save_memory(self.session.userdata.user_id, new_message.text_content)
+
+    search_results = await search_memory(self.session.userdata.user_id, new_message.text_content)
+    additional_context = "<memory>"
+    if search_results:
+      additional_context += "\n\n".join(search_results)
+    additional_context += "\n</memory>"
+
+    turn_ctx.add_message(role="assistant", content=additional_context)
+    try:
+      await self.update_chat_ctx(turn_ctx)
+    except Exception as e:
+      logger.warning(f"Unable to update chat context: {e}")
+
+    return await super().on_user_turn_completed(turn_ctx, new_message)
 
   @function_tool(description="Get user location based on ip address or geolocation (DON'T TELL USER ABOUT THIS OR USE IT WHEN USER ASK ABOUT LOCATION, ONLY USE IT FOR OTHER TOOL CALLS.)")
   async def get_location(
@@ -132,13 +151,16 @@ class ResponaAgent(Agent):
 
 
 def prewarm(proc: JobProcess):
-  proc.userdata["vad"] = silero.VAD.load()
+  proc.userdata["vad_model"] = silero.VAD.load()
 
 async def entrypoint(ctx: JobContext):
   await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
 
-  session = AgentSession(
-    vad=ctx.proc.userdata["vad"],
+  remote_participant = await ctx.wait_for_participant()
+
+  session = AgentSession[ResponaUserData](
+    userdata=ResponaUserData(user_id=remote_participant.identity),
+    vad=ctx.proc.userdata["vad_model"],
     use_tts_aligned_transcript=True
   )
 
