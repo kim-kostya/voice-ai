@@ -16,7 +16,8 @@ import { trpc } from "@/lib/trpc";
 
 export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
   const trpcUtils = trpc.useUtils();
-  const { room, setRoom, volume, roomState, setRoomState } = useLiveKit();
+  const { room, setRoom, volume, roomState, setRoomState, setVoiceId } =
+    useLiveKit();
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
 
   useEffect(() => {
@@ -54,6 +55,11 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
           console.log("[LiveKit] Room is already connected");
           return;
         }
+
+        console.log("[TRPC] Retrieving current voice ID");
+        const voiceId = await trpcUtils.voices.getCurrentVoice.fetch();
+        setVoiceId(voiceId);
+        console.log("[TRPC] Current voice ID retrieved:", voiceId);
 
         console.log("[LiveKit] Attempting to connect to room");
         setRoomState("connecting");

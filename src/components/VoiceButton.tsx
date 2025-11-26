@@ -23,6 +23,10 @@ export default function VoiceButton() {
 
     await localParticipant.setMicrophoneEnabled(
       !localParticipant.isMicrophoneEnabled,
+      undefined,
+      {
+        preConnectBuffer: true,
+      },
     );
   };
 
