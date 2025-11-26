@@ -8,8 +8,8 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { trpc } from "@/lib/trpc";
 import { cn } from "@/lib/utils";
-import { api } from "@/trpc/react";
 
 type ReminderEvent = {
   id: number;
@@ -21,7 +21,7 @@ export function CalendarComponent({ className }: { className?: string }) {
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
   // Fetch reminders
-  const reminders = api.reminders.getReminders.useQuery();
+  const reminders = trpc.reminders.getReminders.useQuery();
 
   // Group events by yyyy-mm-dd
   const eventsByDate = React.useMemo(() => {
