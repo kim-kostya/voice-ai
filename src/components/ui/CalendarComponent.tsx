@@ -1,7 +1,9 @@
 "use client";
 
 import * as React from "react";
+import { useRef } from "react";
 import { Calendar } from "@/components/ui/calendar";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
   TooltipContent,
@@ -9,7 +11,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { trpc } from "@/lib/trpc";
-import { cn } from "@/lib/utils";
 
 type ReminderEvent = {
   id: number;
@@ -17,7 +18,8 @@ type ReminderEvent = {
   time: Date;
 };
 
-export function CalendarComponent({ className }: { className?: string }) {
+export function CalendarComponent() {
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
 
   // Fetch reminders
@@ -49,7 +51,7 @@ export function CalendarComponent({ className }: { className?: string }) {
 
   return (
     <TooltipProvider>
-      <div className={cn("rounded-md border p-4", className)}>
+      <ScrollArea className="flex-1 p-2 h-100" ref={scrollRef}>
         <h2 className="text-lg font-semibold mb-4">Calendar</h2>
 
         <div className="relative">
@@ -127,7 +129,7 @@ export function CalendarComponent({ className }: { className?: string }) {
             </ul>
           )}
         </div>
-      </div>
+      </ScrollArea>
     </TooltipProvider>
   );
 }
