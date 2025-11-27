@@ -9,7 +9,7 @@ from livekit.agents import (
   JobContext,
   RoomOutputOptions,
   WorkerOptions,
-  cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess,
+  cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess, llm,
 )
 
 from livekit.plugins import openai
@@ -19,6 +19,8 @@ from livekit.plugins import silero
 from livekit.rtc import RpcInvocationData
 
 from rpc import AgentRPCClient
+from src.memory import save_memory, search_memory
+from src.userdata import ResponaUserData
 from weather import get_current_weather_by_coords
 
 load_dotenv()
@@ -26,7 +28,7 @@ load_dotenv()
 logger = logging.getLogger("transcriber")
 
 
-class DevAgent(Agent):
+class ResponaAgent(Agent):
   def __init__(self):
     super().__init__(
       instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner.",
@@ -40,6 +42,23 @@ class DevAgent(Agent):
         model="eleven_multilingual_v2"
       )
     )
+
+  async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
+    await save_memory(self.session.userdata.user_id, new_message.text_content)
+
+    search_results = await search_memory(self.session.userdata.user_id, new_message.text_content)
+    additional_context = "<memory>"
+    if search_results:
+      additional_context += "\n\n".join(search_results)
+    additional_context += "\n</memory>"
+
+    turn_ctx.add_message(role="assistant", content=additional_context)
+    try:
+      await self.update_chat_ctx(turn_ctx)
+    except Exception as e:
+      logger.warning(f"Unable to update chat context: {e}")
+
+    return await super().on_user_turn_completed(turn_ctx, new_message)
 
   @function_tool(description="Get user location based on ip address or geolocation (DON'T TELL USER ABOUT THIS OR USE IT WHEN USER ASK ABOUT LOCATION, ONLY USE IT FOR OTHER TOOL CALLS.)")
   async def get_location(
@@ -76,16 +95,72 @@ class DevAgent(Agent):
       print(e)
       return "Unable to get weather"
 
+  @function_tool(description="Get list of reminders or calendar events")
+  async def get_reminders(self, context: RunContext):
+    try:
+      context.disallow_interruptions()
+      room = get_job_context().room
+      participant_identity = next(iter(room.remote_participants))
+      rpc_client = AgentRPCClient(room, participant_identity)
+
+      reminders = await rpc_client.get_reminders()
+      return json.dumps(reminders.reminders)
+    except Exception as e:
+      print(e)
+      return "Unable to get reminders"
+
+  @function_tool(description="""
+  Add reminder to calendar
+  
+  @param reminder_text: Reminder text
+  @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss), UTC time
+  """)
+  async def add_reminder(self, context: RunContext, reminder_text: str, reminder_time: str):
+    try:
+      context.disallow_interruptions()
+      room = get_job_context().room
+      participant_identity = next(iter(room.remote_participants))
+      rpc_client = AgentRPCClient(room, participant_identity)
+
+      await rpc_client.add_reminder({
+        "text": reminder_text,
+        "time": reminder_time
+      })
+      return "Reminder added successfully"
+    except Exception as e:
+      print(e)
+      return "Unable to add reminder"
+
+  @function_tool(description="""
+  Remove reminder from calendar
+  
+  @param reminder_id: Reminder id to remove (to get reminder id, use get_reminders function)
+  """)
+  async def remove_reminder(self, context: RunContext, reminder_id: str):
+    try:
+      context.disallow_interruptions()
+      room = get_job_context().room
+      participant_identity = next(iter(room.remote_participants))
+      rpc_client = AgentRPCClient(room, participant_identity)
+
+      await rpc_client.remove_reminder(reminder_id)
+      return "Reminder removed successfully"
+    except Exception as e:
+      print(e)
+      return "Unable to remove reminder"
+
 
 def prewarm(proc: JobProcess):
-  proc.userdata["vad"] = silero.VAD.load()
+  proc.userdata["vad_model"] = silero.VAD.load()
 
 async def entrypoint(ctx: JobContext):
-  logger.info(f"starting dev agent (speech to text) example, room: {ctx.room.name}")
   await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
 
-  session = AgentSession(
-    vad=ctx.proc.userdata["vad"],
+  remote_participant = await ctx.wait_for_participant()
+
+  session = AgentSession[ResponaUserData](
+    userdata=ResponaUserData(user_id=remote_participant.identity),
+    vad=ctx.proc.userdata["vad_model"],
     use_tts_aligned_transcript=True
   )
 
@@ -96,7 +171,7 @@ async def entrypoint(ctx: JobContext):
     session.output.set_audio_enabled(req["enabled"])
 
   await session.start(
-    agent=DevAgent(),
+    agent=ResponaAgent(),
     room=ctx.room,
     room_input_options=RoomInputOptions(
       close_on_disconnect=True,

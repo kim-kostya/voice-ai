@@ -6,6 +6,12 @@ from livekit.rtc import Room
 
 
 @dataclass
+class Reminder:
+  id: str
+  text: str
+  time: datetime
+
+@dataclass
 class GeoLocation:
   latitude: float
   longitude: float
@@ -90,3 +96,28 @@ class AgentRPCClient:
         longitude=response['location']['longitude'],
       )
     )
+
+  async def get_reminders(self) -> RemindersWithIdRPCMessage:
+    response = await self.__perform_rpc_call("get_reminders", {})
+
+    if 'type' not in response or response['type'] != 'reminders_with_id':
+      raise RPCError("Invalid RPC response")
+
+    if 'reminders' not in response:
+      raise RPCError("Invalid RPC response")
+
+    return RemindersWithIdRPCMessage(reminders=response['reminders'])
+
+  async def add_reminder(self, reminder: dict):
+    response = await self.__perform_rpc_call("add_reminder", reminder)
+
+    if 'type' not in response or response['type'] != 'success':
+      raise RPCError("Invalid RPC response")
+
+  async def remove_reminder(self, reminder_id: str):
+    response = await self.__perform_rpc_call("remove_reminder", {
+      "id": reminder_id
+    })
+
+    if 'type' not in response or response['type'] != 'success':
+      raise RPCError("Invalid RPC response")
