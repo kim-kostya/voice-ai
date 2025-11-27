@@ -20,7 +20,7 @@ export const VoiceTranscriptionHandler = () => {
           message: newMessage.text,
           timestamp: newMessage.streamInfo.timestamp,
           from:
-            newMessage.participantInfo.identity === "user" ? "user" : "agent",
+            newMessage.participantInfo.identity === "agent" ? "agent" : "user",
         });
       } else {
         existingMessage.message = newMessage.text;

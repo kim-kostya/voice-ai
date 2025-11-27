@@ -1,9 +1,9 @@
 "use client";
 
+import { CalendarPopover } from "@/components/popover/CalendarPopover";
 import { ChatHistoryPopover } from "@/components/popover/ChatHistoryPopover";
 import { VoiceModelSettingsPopover } from "@/components/popover/VoiceModelSettingsPopover";
 import { VolumeControlPopover } from "@/components/popover/VolumeControlPopover";
-import { CalendarComponent } from "@/components/ui/CalendarComponent";
 import VoiceButton from "@/components/VoiceButton";
 import { VoiceTranscriptionHandler } from "@/components/VoiceTranscriptionHandler";
 
@@ -14,11 +14,8 @@ export default function Home() {
       <div className="flex items-center gap-2 mt-4">
         <VolumeControlPopover />
         <ChatHistoryPopover />
-        <VoiceModelSettingsPopover />
-      </div>
-      <VoiceTranscriptionHandler />
-      <div className="w-full max-w-md mt-10">
-        <CalendarComponent />
+        <VoiceTranscriptionHandler />
+        <CalendarPopover />
       </div>
     </main>
   );
