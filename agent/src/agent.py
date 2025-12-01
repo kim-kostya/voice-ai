@@ -164,7 +164,7 @@ async def entrypoint(ctx: JobContext):
   session = AgentSession[ResponaUserData](
     userdata=ResponaUserData(user_id=remote_participant.identity),
     vad=ctx.proc.userdata["vad_model"],
-    use_tts_aligned_transcript=True
+    use_tts_aligned_transcript=True,
     preemptive_generation=True,
   )
 
