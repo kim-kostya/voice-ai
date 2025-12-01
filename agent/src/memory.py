@@ -1,10 +1,17 @@
 from mem0 import AsyncMemoryClient
 from logging import getLogger
 
-memory = AsyncMemoryClient()
+memory: AsyncMemoryClient = None
 logger = getLogger("MEM0")
 
+def init_memory():
+  global memory
+  if memory is not None:
+    return
+  memory = AsyncMemoryClient()
+
 async def search_memory(user_id: str, message: str) -> list[str]:
+  global memory
   try:
     search_results = await memory.search(message=message, user_id=user_id)
 
@@ -26,6 +33,7 @@ async def search_memory(user_id: str, message: str) -> list[str]:
     return []
 
 async def save_memory(user_id: str, message: str):
+  global memory
   try:
     await memory.add(messages=[{
       "role": "user",
