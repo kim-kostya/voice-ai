@@ -19,8 +19,8 @@ from livekit.plugins import silero
 from livekit.rtc import RpcInvocationData
 
 from rpc import AgentRPCClient
-from src.memory import save_memory, search_memory
-from src.userdata import ResponaUserData
+from memory import save_memory, search_memory
+from userdata import ResponaUserData
 from weather import get_current_weather_by_coords
 
 load_dotenv()
