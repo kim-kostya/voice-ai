@@ -19,7 +19,7 @@ from livekit.plugins import silero
 from livekit.rtc import RpcInvocationData
 
 from rpc import AgentRPCClient
-from memory import save_memory, search_memory
+from memory import save_memory, search_memory, init_memory
 from userdata import ResponaUserData
 from weather import get_current_weather_by_coords
 
@@ -157,6 +157,7 @@ def greeting(session: AgentSession):
   session.say("Hello, I am Respona. How can I help you today?", allow_interruptions=False)
 
 async def entrypoint(ctx: JobContext):
+  init_memory()
   await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
 
   remote_participant = await ctx.wait_for_participant()
