@@ -9,7 +9,6 @@ import ChatHistory from "@/components/ChatHistory";
 import TextChatHandler from "@/components/TextChatHandler";
 import { Button } from "@/components/ui/Button";
 import { TextArea } from "@/components/ui/TextArea";
-import VoiceModelSettings from "@/components/VoiceModelSettings";
 import { CalendarWidget } from "@/components/widgets/CalendarWidget";
 import { VoiceModelSettingsWidget } from "@/components/widgets/VoiceModelSettingsWidget";
 import { useAgentAudioOutput } from "@/lib/hooks/agent";

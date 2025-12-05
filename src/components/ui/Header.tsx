@@ -1,6 +1,4 @@
 import { SignedIn, SignedOut, SignInButton, UserButton } from "@clerk/nextjs";
-import { Settings } from "lucide-react";
-import { Button } from "@/components/ui/Button";
 
 export function Header() {
   return (
