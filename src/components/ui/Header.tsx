@@ -12,9 +12,6 @@ export function Header() {
         <span className="text-lg font-semibold">Respona</span>
       </div>
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon">
-          <Settings className="w-5 h-5" />
-        </Button>
         <SignedOut>
           <SignInButton />
         </SignedOut>
