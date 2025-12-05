@@ -13,7 +13,12 @@ def init_memory():
 async def search_memory(user_id: str, message: str) -> list[str]:
   global memory
   try:
-    search_results = await memory.search(message=message, user_id=user_id)
+    search_results = await memory.search(query=f"""
+    Find all relevant information that is connected to the following message:
+    <message>
+    {message}
+    </message>
+    """, user_id=user_id)
 
     if search_results and search_results.get('results', []):
       context_parts = []

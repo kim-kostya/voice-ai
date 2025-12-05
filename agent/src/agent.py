@@ -1,5 +1,6 @@
 import json
 import logging
+from typing import Any, Coroutine
 
 from dotenv import load_dotenv
 from livekit.agents import (
@@ -18,14 +19,15 @@ from livekit.plugins import elevenlabs
 from livekit.plugins import silero
 from livekit.rtc import RpcInvocationData
 
-from rpc import AgentRPCClient
+from rpc import AgentRPCClient, AgentRPCSuccess
 from memory import save_memory, search_memory, init_memory
+from src.rpc import parse_rpc_message, serialize_rpc_message
 from userdata import ResponaUserData
 from weather import get_current_weather_by_coords
 
 load_dotenv()
 
-logger = logging.getLogger("transcriber")
+logger = logging.getLogger("agent")
 
 
 class ResponaAgent(Agent):
@@ -38,7 +40,7 @@ class ResponaAgent(Agent):
         model="openai/gpt-4.1-nano"
       ),
       tts=elevenlabs.TTS(
-        voice_id="WAhoMTNdLdMoq1j3wf3I",
+        voice_id="bIHbv24MWmeRgasZH58o",
         model="eleven_multilingual_v2"
       )
     )
@@ -149,12 +151,12 @@ class ResponaAgent(Agent):
       print(e)
       return "Unable to remove reminder"
 
+  async def on_enter(self) -> None:
+    await self.session.say("Hello, I am Respona. How can I help you today?", allow_interruptions=False)
+
 
 def prewarm(proc: JobProcess):
   proc.userdata["vad_model"] = silero.VAD.load()
-
-def greeting(session: AgentSession):
-  session.say("Hello, I am Respona. How can I help you today?", allow_interruptions=False)
 
 async def entrypoint(ctx: JobContext):
   init_memory()
@@ -165,23 +167,25 @@ async def entrypoint(ctx: JobContext):
   session = AgentSession[ResponaUserData](
     userdata=ResponaUserData(user_id=remote_participant.identity),
     vad=ctx.proc.userdata["vad_model"],
-    use_tts_aligned_transcript=True,
-    preemptive_generation=True,
+    use_tts_aligned_transcript=False,
+    preemptive_generation=False,
   )
 
-  ctx.room.on('connected', lambda: greeting(session))
-
   @ctx.room.local_participant.register_rpc_method("set_audio_output")
-  async def set_audio_output(data: RpcInvocationData) -> None:
+  async def set_audio_output(data: RpcInvocationData) -> str:
     req = json.loads(data.payload)
     session.input.set_audio_enabled(req["enabled"])
     session.output.set_audio_enabled(req["enabled"])
+    return serialize_rpc_message({"type": "success"})
 
   @ctx.room.local_participant.register_rpc_method("set_voice")
-  async def set_voice(data: RpcInvocationData) -> None:
-    req = json.loads(data.payload)
-    new_tts = elevenlabs.TTS(voice_id=req["voice_id"], model="eleven_multilingual_v2")
+  async def set_voice(data: RpcInvocationData) -> str:
+    req = parse_rpc_message(data.payload)
+    old_tts = session._tts
+    new_tts = elevenlabs.TTS(voice_id=req["voiceId"], model="eleven_multilingual_v2")
     session._tts = new_tts
+    old_tts.close()
+    return serialize_rpc_message({"type": "success"})
 
   await session.start(
     agent=ResponaAgent(),
