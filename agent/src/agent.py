@@ -169,7 +169,7 @@ async def entrypoint(ctx: JobContext):
     preemptive_generation=True,
   )
 
-  ctx.room.on('connected', lambda: greeting(session))
+  greeting(session)
 
   @ctx.room.local_participant.register_rpc_method("set_audio_output")
   async def set_audio_output(data: RpcInvocationData) -> None:
