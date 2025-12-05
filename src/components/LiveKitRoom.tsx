@@ -84,8 +84,6 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
       setTimeout(connect, 10000, abortController.signal);
     };
 
-    const onChatMessage = (_: ReceivedChatMessage) => {};
-
     room.on(RoomEvent.Connected, onConnected);
     room.on(RoomEvent.Disconnected, onDisconnected);
 
