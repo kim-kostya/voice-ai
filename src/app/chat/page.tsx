@@ -9,6 +9,9 @@ import ChatHistory from "@/components/ChatHistory";
 import TextChatHandler from "@/components/TextChatHandler";
 import { Button } from "@/components/ui/Button";
 import { TextArea } from "@/components/ui/TextArea";
+import VoiceModelSettings from "@/components/VoiceModelSettings";
+import { CalendarWidget } from "@/components/widgets/CalendarWidget";
+import { VoiceModelSettingsWidget } from "@/components/widgets/VoiceModelSettingsWidget";
 import { useAgentAudioOutput } from "@/lib/hooks/agent";
 
 export default function Chat() {
@@ -21,6 +24,12 @@ export default function Chat() {
           <ChatHistory inverse={false} maxMessageCount={0} />
           <ChatInput />
         </div>
+        <aside className="w-80 border-l border-border bg-muted/30 p-4 overflow-y-auto">
+          <div className="space-y-4">
+            <VoiceModelSettingsWidget />
+            <CalendarWidget />
+          </div>
+        </aside>
       </main>
       <TextChatHandler />
     </>
