@@ -21,6 +21,9 @@ class GeoLocation:
 class AgentRPCSuccess:
   type: str = "success"
 
+@dataclass
+class CurrentVoiceRPCMessage:
+  voiceId: str
 
 @dataclass
 class ReminderRPCMessage:
@@ -36,7 +39,6 @@ class RemindersWithIdRPCMessage:
 @dataclass
 class GeoLocationRPCMessage:
   location: GeoLocation
-
 
 @dataclass
 class AgentRPCError:
@@ -77,6 +79,10 @@ class AgentRPCClient:
       raise RPCError(payload['message'])
 
     return payload
+
+  async def get_current_voice(self) -> str:
+    response = await self.__perform_rpc_call("get_voice", {})
+    return response['voiceId']
 
   async def get_location(self) -> GeoLocationRPCMessage:
     response = await self.__perform_rpc_call("get_location", {})
@@ -121,3 +127,15 @@ class AgentRPCClient:
 
     if 'type' not in response or response['type'] != 'success':
       raise RPCError("Invalid RPC response")
+
+
+def parse_rpc_message(payload: str) -> dict[str, any]:
+  message = json.loads(payload)
+
+  if 'json' not in message:
+    raise RPCError("Invalid RPC message")
+
+  return message['json']
+
+def serialize_rpc_message(message: dict[str, any]) -> str:
+  return json.dumps({"json": message})
