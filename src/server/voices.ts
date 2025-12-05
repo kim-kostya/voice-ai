@@ -3,69 +3,69 @@ export interface Voice {
   supportedLanguages: string[];
 }
 
-export const DEFAULT_VOICE_ID = "WAhoMTNdLdMoq1j3wf3I";
+export const DEFAULT_VOICE_ID = "bIHbv24MWmeRgasZH58o";
 
 export const voices: { [key: string]: Voice } = {
-  WAhoMTNdLdMoq1j3wf3I: {
-    displayName: "Hope",
+  bIHbv24MWmeRgasZH58o: {
+    displayName: "Will",
     supportedLanguages: [
       "English",
-      "Portuguese",
-      "Spanish",
-      "Czech",
-      "Italian",
-      "Turkish",
-      "Russian",
-      "Hindi",
-      "Malay",
-      "Finnish",
-      "Slovak",
-      "Romanian",
-      "Dutch",
-      "Croatian",
-      "Swedish",
       "French",
-      "Danish",
-    ],
-  },
-  LWFgMHXb8m0uANBUpzlq: {
-    displayName: "Saavi",
-    supportedLanguages: [
-      "Hindi",
-      "Turkish",
-      "Slovak",
+      "German",
       "Portuguese",
-      "Ukrainian",
-      "Malay",
-      "Indonesian",
-      "Romanian",
+      "Chinese",
+      "Czech",
+      "Filipino",
+      "Slovak",
       "Spanish",
+      "Swedish",
     ],
   },
-  "9IzcwKmvwJcw58h3KnlH": {
-    displayName: "Julian",
-    supportedLanguages: ["English"],
-  },
-  LruHrtVF6PSyGItzMNHS: {
-    displayName: "Benjamin",
+  cgSgspJ2msm6clMCkdW9: {
+    displayName: "Jessica",
     supportedLanguages: [
       "English",
-      "Hindi",
-      "Greek",
-      "Spanish",
       "French",
       "Arabic",
-      "Indonesian",
-      "Romanian",
-      "Filipino",
-      "Russian",
-      "Korean",
-      "Finnish",
+      "Japanese",
+      "Chinese",
+      "German",
       "Czech",
-      "Tamil",
+      "Hindi",
+    ],
+  },
+  cjVigY5qzO86Huf0OWal: {
+    displayName: "Eric",
+    supportedLanguages: [
+      "English",
+      "French",
+      "Portuguese",
+      "German",
+      "Slovak",
+      "Spanish",
+    ],
+  },
+  iP95p4xoKVk53GoZ742B: {
+    displayName: "Chris",
+    supportedLanguages: [
+      "English",
+      "French",
+      "Arabic",
+      "Portuguese",
       "Swedish",
+      "Hindi",
+    ],
+  },
+  Xb7hH8MSUJpSbSDYk0k2: {
+    displayName: "Alice",
+    supportedLanguages: [
+      "English",
       "Italian",
-      "Norwegian",
+      "French",
+      "Arabic",
+      "Japanese",
+      "Polish",
+      "Hindi",
     ],
   },
 };
