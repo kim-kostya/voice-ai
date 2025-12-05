@@ -25,7 +25,7 @@ from weather import get_current_weather_by_coords
 
 load_dotenv()
 
-logger = logging.getLogger("transcriber")
+logger = logging.getLogger("agent")
 
 
 class ResponaAgent(Agent):
