@@ -1,4 +1,4 @@
-import { Settings } from "lucide-react";
+import { CircleUserRound } from "lucide-react";
 import { Button } from "@/components/ui/Button";
 import {
   Popover,
@@ -16,7 +16,7 @@ export function VoiceModelSettingsPopover() {
           size="icon"
           className="rounded-lg bg-transparent"
         >
-          <Settings className="w-4 h-4" />
+          <CircleUserRound className="w-4 h-4" />
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-80 p-4" align="center" side="top">
