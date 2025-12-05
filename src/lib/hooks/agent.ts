@@ -132,6 +132,11 @@ export interface GeoLocationRPCMessage {
   location: GeoLocation;
 }
 
+export interface CurrentVoiceRPCMessage {
+  type: "current_voice";
+  voiceId: string;
+}
+
 export interface AgentRPCError {
   type: "error";
   message: string;
@@ -141,5 +146,6 @@ export type AgentRPCMessage =
   | ReminderRPCMessage
   | RemindersWithIdRPCMessage
   | GeoLocationRPCMessage
+  | CurrentVoiceRPCMessage
   | AgentRPCSuccess
   | AgentRPCError;

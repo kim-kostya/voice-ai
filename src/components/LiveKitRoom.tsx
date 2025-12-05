@@ -118,6 +118,20 @@ function LiveKitAgent() {
   const removeReminder = trpc.reminders.removeReminder.useMutation();
 
   useAgentRpcMethod(
+    "get_current_voice",
+    z.object({}),
+    async () => {
+      const voiceId = await trpcUtils.voices.getCurrentVoice.fetch();
+
+      return {
+        type: "current_voice",
+        voiceId,
+      };
+    },
+    [],
+  );
+
+  useAgentRpcMethod(
     "get_location",
     z.object({}),
     async () => {
