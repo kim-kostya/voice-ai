@@ -1,6 +1,5 @@
 "use client";
 
-import type { ReceivedChatMessage } from "@livekit/components-core";
 import {
   RoomAudioRenderer,
   RoomContext,
@@ -85,11 +84,8 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
       setTimeout(connect, 10000, abortController.signal);
     };
 
-    const onChatMessage = (_: ReceivedChatMessage) => {};
-
     room.on(RoomEvent.Connected, onConnected);
     room.on(RoomEvent.Disconnected, onDisconnected);
-    room.on(RoomEvent.ChatMessage, onChatMessage);
 
     // noinspection JSIgnoredPromiseFromCall
     connect();
@@ -97,7 +93,6 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
     return () => {
       room.off(RoomEvent.Connected, onConnected);
       room.off(RoomEvent.Disconnected, onDisconnected);
-      room.off(RoomEvent.ChatMessage, onChatMessage);
       abortController.abort();
     };
   }, [room, roomId, setRoomState, trpcUtils.rooms.getRoomData]);
@@ -121,6 +116,20 @@ function LiveKitAgent() {
   const trpcUtils = trpc.useUtils();
   const addReminder = trpc.reminders.addReminder.useMutation();
   const removeReminder = trpc.reminders.removeReminder.useMutation();
+
+  useAgentRpcMethod(
+    "get_current_voice",
+    z.object({}),
+    async () => {
+      const voiceId = await trpcUtils.voices.getCurrentVoice.fetch();
+
+      return {
+        type: "current_voice",
+        voiceId,
+      };
+    },
+    [],
+  );
 
   useAgentRpcMethod(
     "get_location",

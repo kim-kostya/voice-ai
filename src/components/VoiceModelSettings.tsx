@@ -44,13 +44,13 @@ export default function VoiceModelSettings() {
   if (!voices) return <div>Loading...</div>;
 
   return (
-    <>
-      <div className="flex items-center gap-2 mb-4">
+    <div>
+      <div className="flex items-center gap-1 mb-2">
         <Mic className="w-4 h-4 text-teal-600" />
         <h3 className="font-semibold text-sm">Voice Model Settings</h3>
       </div>
 
-      <div className="space-y-4">
+      <div className="space-y-2">
         <div className="space-y-2">
           <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider">
             Current Voice
@@ -110,6 +110,6 @@ export default function VoiceModelSettings() {
           )) || <div>Loading...</div>}
         </div>
       </div>
-    </>
+    </div>
   );
 }

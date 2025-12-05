@@ -15,8 +15,8 @@ export function CalendarPopover() {
           <Calendar className="h-4 w-4" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-80 p-6 max-h-[30vh] overflow-hidden">
-        <CalendarComponent />
+      <PopoverContent className="w-fit p-6 max-h-[35vh] overflow-hidden">
+        <CalendarComponent className="flex flex-row gap-2" />
       </PopoverContent>
     </Popover>
   );
