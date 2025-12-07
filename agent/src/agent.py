@@ -19,9 +19,8 @@ from livekit.plugins import elevenlabs
 from livekit.plugins import silero
 from livekit.rtc import RpcInvocationData
 
-from rpc import AgentRPCClient, AgentRPCSuccess
+from rpc import AgentRPCClient, AgentRPCSuccess, parse_rpc_message, serialize_rpc_message
 from memory import save_memory, search_memory, init_memory
-from src.rpc import parse_rpc_message, serialize_rpc_message
 from userdata import ResponaUserData
 from weather import get_current_weather_by_coords
 
