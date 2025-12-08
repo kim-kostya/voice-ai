@@ -41,8 +41,10 @@ export default function RootLayout({
           <TRPCProvider>
             <LiveKitRoom>
               <div className="min-h-screen bg-background flex flex-col">
-                <Header />
-                <SignedIn>{children}</SignedIn>
+                <SignedIn>
+                  <Header />
+                  {children}
+                </SignedIn>
 
                 <SignedOut>
                   <div className="flex flex-col items-center justify-center h-screen gap-4 text-center">
