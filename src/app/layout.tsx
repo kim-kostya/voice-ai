@@ -23,8 +23,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Voice AI",
-  description: "Personal AI Assistant",
+  title: "Respona - Voice AI Assistant",
+  description: "Personal voice AI Assistant for routine tasks.",
+  manifest: "/manifest.json",
 };
 
 export default function RootLayout({
