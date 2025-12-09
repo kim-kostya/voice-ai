@@ -249,9 +249,15 @@ importers:
       '@types/react-dom':
         specifier: ^19.2.3
         version: 19.2.3(@types/react@19.2.7)
+      '@types/serviceworker':
+        specifier: ^0.0.168
+        version: 0.0.168
       '@types/web':
         specifier: ^0.0.299
         version: 0.0.299
+      '@types/web-push':
+        specifier: ^3.6.4
+        version: 3.6.4
       drizzle-kit:
         specifier: ^0.31.8
         version: 0.31.8
@@ -2344,8 +2350,14 @@ packages:
   '@types/react@19.2.7':
     resolution: {integrity: sha512-MWtvHrGZLFttgeEj28VXHxpmwYbor/ATPYbBfSFZEIRK0ecCFLl2Qo55z52Hss+UV9CRN7trSeq1zbgx7YDWWg==}
 
+  '@types/serviceworker@0.0.168':
+    resolution: {integrity: sha512-/uKxoeJbW0cMlDSE+ubMvZEObJKAPNs4nQSguywPfDjT1F4t/7rJilde/hfpiwoaTbnjknvP43DFWbrxx7QQeQ==}
+
   '@types/trusted-types@2.0.7':
     resolution: {integrity: sha512-ScaPdn1dQczgbl0QFTeTOmVHFULt394XJgOQNoyVhZ6r2vLnMLJfBPd53SB52T/3G36VI1/g2MZaX0cwDuXsfw==}
+
+  '@types/web-push@3.6.4':
+    resolution: {integrity: sha512-GnJmSr40H3RAnj0s34FNTcJi1hmWFV5KXugE0mYWnYhgTAHLJ/dJKAwDmvPJYMke0RplY2XE9LnM4hqSqKIjhQ==}
 
   '@types/web@0.0.299':
     resolution: {integrity: sha512-ev850CsK7S/UwzEgUPliV6qfSw8bUSJ9AvbkER1lF3U8cbsTluvK2MtMq4twvgjgIuuLFDhb9hZ1k6/NJMZqMA==}
@@ -6424,7 +6436,13 @@ snapshots:
     dependencies:
       csstype: 3.2.3
 
+  '@types/serviceworker@0.0.168': {}
+
   '@types/trusted-types@2.0.7': {}
+
+  '@types/web-push@3.6.4':
+    dependencies:
+      '@types/node': 22.19.1
 
   '@types/web@0.0.299': {}
 
