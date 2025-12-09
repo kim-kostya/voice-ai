@@ -107,6 +107,9 @@ importers:
       '@radix-ui/react-tooltip':
         specifier: 1.1.6
         version: 1.1.6(@types/react-dom@19.2.3(@types/react@19.2.7))(@types/react@19.2.7)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      '@serwist/turbopack':
+        specifier: 10.0.0-preview.14
+        version: 10.0.0-preview.14(esbuild-wasm@0.27.1)(next@15.5.7(@babel/core@7.28.5)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
       '@tanstack/react-query':
         specifier: ^5.90.12
         version: 5.90.12(react@19.2.1)
@@ -197,6 +200,9 @@ importers:
       recharts:
         specifier: 2.15.4
         version: 2.15.4(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
+      serwist:
+        specifier: 10.0.0-preview.14
+        version: 10.0.0-preview.14(typescript@5.9.3)
       sonner:
         specifier: ^1.7.4
         version: 1.7.4(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
@@ -231,12 +237,6 @@ importers:
       '@eslint/js':
         specifier: ^9.39.1
         version: 9.39.1
-      '@serwist/next':
-        specifier: ^9.2.3
-        version: 9.2.3(next@15.5.7(@babel/core@7.28.5)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(typescript@5.9.3)
-      '@serwist/turbopack':
-        specifier: 10.0.0-preview.14
-        version: 10.0.0-preview.14(esbuild-wasm@0.25.12)(next@15.5.7(@babel/core@7.28.5)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react@19.2.1)(typescript@5.9.3)
       '@tailwindcss/postcss':
         specifier: ^4.1.17
         version: 4.1.17
@@ -264,6 +264,9 @@ importers:
       drizzle-orm:
         specifier: ^0.44.7
         version: 0.44.7(@libsql/client@0.15.15)(@upstash/redis@1.35.7)
+      esbuild-wasm:
+        specifier: ^0.27.1
+        version: 0.27.1
       eslint:
         specifier: ^9.39.1
         version: 9.39.1(jiti@2.6.1)
@@ -282,9 +285,6 @@ importers:
       postcss:
         specifier: ^8.5.6
         version: 8.5.6
-      serwist:
-        specifier: ^9.2.3
-        version: 9.2.3(typescript@5.9.3)
       tailwindcss:
         specifier: ^4.1.17
         version: 4.1.17
@@ -2017,25 +2017,6 @@ packages:
       typescript:
         optional: true
 
-  '@serwist/build@9.2.3':
-    resolution: {integrity: sha512-UU38GDsTerzoCRDIT5v62W/CcTMLfGZm/tAa+u8XLBU0y0f2aJ2GCfsHnI1eXhEuWvt4Y7Imx/uG2ww2KWIBWQ==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
-  '@serwist/next@9.2.3':
-    resolution: {integrity: sha512-sbStIaen8H6ZhNCtfxAuZ2haujJe8nPFRBiq5KQFYYi5iyFrDGLpYICmRTBP6Oc1pQBmsAqbBZzIjjC60d+7zg==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      next: '>=14.0.0'
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
   '@serwist/turbopack@10.0.0-preview.14':
     resolution: {integrity: sha512-nwiY36xPxVAavLf0iZaQfUegn/0wPzh1kOsISscTOahxnLjGmp0TNMaJWfOdWb0fCoNY80tiO9fvumLsa9kJPw==}
     engines: {node: '>=20.0.0'}
@@ -2051,28 +2032,8 @@ packages:
   '@serwist/utils@10.0.0-preview.14':
     resolution: {integrity: sha512-zPZg8/mAGdZRil+E0dAcywtw3yaPqJZbAJrlL5EVLuWOqunjAdNG1vh5Pc3LJxDnugi19pkWIAn4cGHlQpqWEQ==}
 
-  '@serwist/webpack-plugin@9.2.3':
-    resolution: {integrity: sha512-y1Ag1a7LARo/LtPVRSrfGO5PG4BZdc1NiMGAq+CGlBH/PJa7RQimo4iq9C94pjxusEsP4yHnsDQ06+GVTQ6gww==}
-    engines: {node: '>=18.0.0'}
-    peerDependencies:
-      typescript: '>=5.0.0'
-      webpack: 4.4.0 || ^5.9.0
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-      webpack:
-        optional: true
-
   '@serwist/window@10.0.0-preview.14':
     resolution: {integrity: sha512-cIYnJdCdqy+wP00gnuR8JDvrGJLtFo6Yy4Qijx6rFZRMYcBnHwiq9B/3fJ016j+E+q9pCJLSsdChMZMEaNdk6Q==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
-  '@serwist/window@9.2.3':
-    resolution: {integrity: sha512-6bK01QAaFI+oXTmDSQHvsw0kTTNlj79PFkox+0Z9XYNqTVLoXY9C6BFmZNvxNxEinOqCSm7cms4I5V54E9/1XA==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -2713,10 +2674,6 @@ packages:
     resolution: {integrity: sha512-oKnbhFyRIXpUuez8iBMmyEa4nbj4IOQyuhc/wy9kY7/WVPcwIO9VA668Pu8RkO7+0G76SLROeyw9CpQ061i4mA==}
     engines: {node: '>=10'}
 
-  chalk@5.6.2:
-    resolution: {integrity: sha512-7NzBL0rN6fMUW+f7A6Io4h40qQlG+xGmtMxfbnH/K7TAtt8JQWVQK+6g0UXKMeVJoyV5EkkNsErQ8pVD3bLHbA==}
-    engines: {node: ^12.17.0 || ^14.13 || >=16.0.0}
-
   class-variance-authority@0.7.1:
     resolution: {integrity: sha512-Ka+9Trutv7G8M6WT6SeiRWz792K5qEqIGEGzXKhAE6xOWAY6pPH8U+9IY3oCMv6kqTmLsv7Xh/2w2RigkePMsg==}
 
@@ -3063,8 +3020,8 @@ packages:
     peerDependencies:
       esbuild: '>=0.12 <1'
 
-  esbuild-wasm@0.25.12:
-    resolution: {integrity: sha512-rZqkjL3Y6FwLpSHzLnaEy8Ps6veCNo1kZa9EOfJvmWtBq5dJH4iVjfmOO6Mlkv9B0tt9WFPFmb/VxlgJOnueNg==}
+  esbuild-wasm@0.27.1:
+    resolution: {integrity: sha512-NjueSyuuMjX6F/mnqQ8g4rkwAFTct7JT/A/oXjXhGTFbWiTm3zU59BMulOrT+KuCHj+oShTBARQCxCDDvVxwFA==}
     engines: {node: '>=18'}
     hasBin: true
 
@@ -4013,10 +3970,6 @@ packages:
     resolution: {integrity: sha512-vkcDPrRZo1QZLbn5RLGPpg/WmIQ65qoWWhcGKf/b5eplkkarX0m9z8ppCat4mlOqUsWpyNuYgO3VRyrYHSzX5g==}
     engines: {node: '>= 0.8.0'}
 
-  pretty-bytes@6.1.1:
-    resolution: {integrity: sha512-mQUvGU6aUFQ+rNvTIAcZuWGRT9a6f6Yrg9bHs4ImKF+HZCEK+plBvnAZYSIQztknZF2qnzNtr6F8s0+IuptdlQ==}
-    engines: {node: ^14.13.1 || >=16.0.0}
-
   pretty-bytes@7.0.1:
     resolution: {integrity: sha512-285/jRCYIbMGDciDdrw0KPNC4LKEEwz/bwErcYNxSJOi4CpGUuLpb9gQpg3XJP0XYj9ldSRluXxih4lX2YN8Xw==}
     engines: {node: '>=20'}
@@ -4207,14 +4160,6 @@ packages:
 
   serwist@10.0.0-preview.14:
     resolution: {integrity: sha512-LMfqIeSCK3hRcT/wRj132ZOmnPt6exwGSrUcDW12wpLhLavn83dFGB9FXLdIusYlAL36hN56oB/xbnU3NTpx/Q==}
-    peerDependencies:
-      typescript: '>=5.0.0'
-    peerDependenciesMeta:
-      typescript:
-        optional: true
-
-  serwist@9.2.3:
-    resolution: {integrity: sha512-menorUH09SpLvU7R25TvG0TuQ12MUDpQ5NKGohbtREF8YI+0D++Abn59XCmvvMp2n740rBizIkeqWq0m6U+++g==}
     peerDependencies:
       typescript: '>=5.0.0'
     peerDependenciesMeta:
@@ -4612,9 +4557,6 @@ packages:
 
   zod@3.25.67:
     resolution: {integrity: sha512-idA2YXwpCdqUSKRCACDE6ItZD9TZzy3OZMtpfLoh6oPR47lipysRrJfjzMqFxQ3uJuUPyUeWe1r9vLH33xO/Qw==}
-
-  zod@4.1.12:
-    resolution: {integrity: sha512-JInaHOamG8pt5+Ey8kGmdcAcg3OL9reK8ltczgHTAwNhMys/6ThXHityHxVV2p3fkw/c+MAvBHFVYHFZDmjMCQ==}
 
   zod@4.1.5:
     resolution: {integrity: sha512-rcUUZqlLJgBC33IT3PNMgsCq6TzLQEG/Ei/KTCU0PedSWRMAXoOUN+4t/0H+Q8bdnLPdqUYnvboJT0bn/229qg==}
@@ -6144,37 +6086,12 @@ snapshots:
     optionalDependencies:
       typescript: 5.9.3
 
-  '@serwist/build@9.2.3(typescript@5.9.3)':
-    dependencies:
-      common-tags: 1.8.2
-      glob: 10.5.0
-      pretty-bytes: 6.1.1
-      source-map: 0.8.0-beta.0
-      zod: 4.1.12
-    optionalDependencies:
-      typescript: 5.9.3
-
-  '@serwist/next@9.2.3(next@15.5.7(@babel/core@7.28.5)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(typescript@5.9.3)':
-    dependencies:
-      '@serwist/build': 9.2.3(typescript@5.9.3)
-      '@serwist/webpack-plugin': 9.2.3(typescript@5.9.3)
-      '@serwist/window': 9.2.3(typescript@5.9.3)
-      chalk: 5.6.2
-      glob: 10.5.0
-      next: 15.5.7(@babel/core@7.28.5)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
-      serwist: 9.2.3(typescript@5.9.3)
-      zod: 4.1.12
-    optionalDependencies:
-      typescript: 5.9.3
-    transitivePeerDependencies:
-      - webpack
-
-  '@serwist/turbopack@10.0.0-preview.14(esbuild-wasm@0.25.12)(next@15.5.7(@babel/core@7.28.5)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react@19.2.1)(typescript@5.9.3)':
+  '@serwist/turbopack@10.0.0-preview.14(esbuild-wasm@0.27.1)(next@15.5.7(@babel/core@7.28.5)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.1(react@19.2.1))(react@19.2.1))(react@19.2.1)(typescript@5.9.3)':
     dependencies:
       '@serwist/build': 10.0.0-preview.14(typescript@5.9.3)
       '@serwist/window': 10.0.0-preview.14(typescript@5.9.3)
       '@swc/core': 1.13.5
-      esbuild-wasm: 0.25.12
+      esbuild-wasm: 0.27.1
       kolorist: 1.8.0
       next: 15.5.7(@babel/core@7.28.5)(babel-plugin-react-compiler@19.1.0-rc.3)(react-dom@19.2.1(react@19.2.1))(react@19.2.1)
       react: 19.2.1
@@ -6190,25 +6107,10 @@ snapshots:
       common-tags: 1.8.2
       kolorist: 1.8.0
 
-  '@serwist/webpack-plugin@9.2.3(typescript@5.9.3)':
-    dependencies:
-      '@serwist/build': 9.2.3(typescript@5.9.3)
-      pretty-bytes: 6.1.1
-      zod: 4.1.12
-    optionalDependencies:
-      typescript: 5.9.3
-
   '@serwist/window@10.0.0-preview.14(typescript@5.9.3)':
     dependencies:
       '@types/trusted-types': 2.0.7
       serwist: 10.0.0-preview.14(typescript@5.9.3)
-    optionalDependencies:
-      typescript: 5.9.3
-
-  '@serwist/window@9.2.3(typescript@5.9.3)':
-    dependencies:
-      '@types/trusted-types': 2.0.7
-      serwist: 9.2.3(typescript@5.9.3)
     optionalDependencies:
       typescript: 5.9.3
 
@@ -6811,8 +6713,6 @@ snapshots:
       ansi-styles: 4.3.0
       supports-color: 7.2.0
 
-  chalk@5.6.2: {}
-
   class-variance-authority@0.7.1:
     dependencies:
       clsx: 2.1.1
@@ -7125,7 +7025,7 @@ snapshots:
     transitivePeerDependencies:
       - supports-color
 
-  esbuild-wasm@0.25.12: {}
+  esbuild-wasm@0.27.1: {}
 
   esbuild@0.18.20:
     optionalDependencies:
@@ -8222,8 +8122,6 @@ snapshots:
 
   prelude-ls@1.2.1: {}
 
-  pretty-bytes@6.1.1: {}
-
   pretty-bytes@7.0.1: {}
 
   promise-limit@2.7.0: {}
@@ -8420,12 +8318,6 @@ snapshots:
   serwist@10.0.0-preview.14(typescript@5.9.3):
     dependencies:
       '@serwist/utils': 10.0.0-preview.14
-      idb: 8.0.3
-    optionalDependencies:
-      typescript: 5.9.3
-
-  serwist@9.2.3(typescript@5.9.3):
-    dependencies:
       idb: 8.0.3
     optionalDependencies:
       typescript: 5.9.3
@@ -8945,8 +8837,6 @@ snapshots:
       zod: 3.25.67
 
   zod@3.25.67: {}
-
-  zod@4.1.12: {}
 
   zod@4.1.5: {}
 
