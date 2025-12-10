@@ -102,6 +102,23 @@ class ResponaAgent(Agent):
       print(e)
       return "Unable to get location"
 
+  @function_tool(description="Get location coordinates based on location name")
+  async def get_coords_by_location(
+    self,
+    context: RunContext,
+    location: str
+  ):
+    try:
+      context.disallow_interruptions()
+      coords = get_current_weather_by_coords(*get_current_weather_by_coords(location)["coords"])
+      return json.dumps({
+        "latitude": coords[0],
+        "longitude": coords[1]
+      })
+    except Exception as e:
+      print(e)
+      return json.dumps({"error": "location_unavailable"})
+
   @function_tool(description="Get current weather based on latitude and longitude")
   async def get_weather(
     self,
@@ -192,6 +209,8 @@ async def entrypoint(ctx: JobContext):
       voice_id=remote_participant.attributes["voice_id"]
     ),
     vad=ctx.proc.userdata["vad_model"],
+    use_tts_aligned_transcript=True,
+    preemptive_generation=True,
     min_interruption_words=1,
     min_endpointing_delay=0.8,
   )
