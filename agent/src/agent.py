@@ -24,7 +24,7 @@ from livekit.rtc import RpcInvocationData
 from memory import init_memory
 from rpc import AgentRPCClient, parse_rpc_message, serialize_rpc_message
 from userdata import ResponaUserData
-from weather import get_current_weather_by_coords
+from weather import get_current_weather_by_coords, get_current_weather_by_coords
 
 load_dotenv()
 
@@ -110,7 +110,7 @@ class ResponaAgent(Agent):
   ):
     try:
       context.disallow_interruptions()
-      coords = get_current_weather_by_coords(*get_current_weather_by_coords(location)["coords"])
+      coords = get_coords_by_location(location)
       return json.dumps({
         "latitude": coords[0],
         "longitude": coords[1]
