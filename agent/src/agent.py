@@ -41,7 +41,7 @@ class ResponaAgent(Agent):
         model="openai/gpt-4.1-nano"
       ),
       tts=elevenlabs.TTS(
-        voice_id="bIHbv24MWmeRgasZH58o",
+        voice_id=self.session.userdata.voice_id,
         model="eleven_multilingual_v2"
       )
     )
@@ -184,7 +184,11 @@ async def entrypoint(ctx: JobContext):
   remote_participant = await ctx.wait_for_participant()
 
   session = AgentSession[ResponaUserData](
-    userdata=ResponaUserData(user_id=remote_participant.identity, timezone_offset=int(remote_participant.attributes["timezone_offset"])),
+    userdata=ResponaUserData(
+      user_id=remote_participant.identity,
+      timezone_offset=int(remote_participant.attributes["timezone_offset"]),
+      voice_id=remote_participant.attributes["voice_id"]
+    ),
     vad=ctx.proc.userdata["vad_model"],
     min_interruption_words=1,
     min_endpointing_delay=0.8,
