@@ -19,8 +19,9 @@ export const VoiceTranscriptionHandler = () => {
           id: newMessage.streamInfo.id,
           message: newMessage.text,
           timestamp: newMessage.streamInfo.timestamp,
-          from:
-            newMessage.participantInfo.identity === "agent" ? "agent" : "user",
+          from: newMessage.participantInfo.identity.startsWith("agent-")
+            ? "agent"
+            : "user",
         });
       } else {
         existingMessage.message = newMessage.text;
