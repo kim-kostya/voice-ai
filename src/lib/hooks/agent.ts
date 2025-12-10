@@ -51,8 +51,8 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
     roomContext.registerRpcMethod(rpcMethodName, async (data) => {
       try {
         console.log(`[LiveKit RPC] ${rpcMethodName} called with data:`, data);
-        const rawRequest = SuperJSON.parse(data.payload);
-        const request = inputSchema.safeParse(rawRequest);
+        const rawRequest = JSON.parse(data.payload);
+        const request = inputSchema.parse(rawRequest);
         return SuperJSON.stringify(await callback(request));
         // biome-ignore lint/suspicious/noExplicitAny: catches all errors that might occur
       } catch (error: any) {
