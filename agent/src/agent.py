@@ -49,19 +49,19 @@ class ResponaAgent(Agent):
     """)
     await self.update_chat_ctx(turn_ctx)
 
-    await save_memory(self.session.userdata.user_id, new_message.text_content)
-
-    search_results = await search_memory(self.session.userdata.user_id, new_message.text_content)
-    additional_context = "<memory>"
-    if search_results:
-      additional_context += "\n\n".join(search_results)
-    additional_context += "\n</memory>"
-
-    turn_ctx.add_message(role="assistant", content=additional_context)
-    try:
-      await self.update_chat_ctx(turn_ctx)
-    except Exception as e:
-      logger.warning(f"Unable to update chat context: {e}")
+    # await save_memory(self.session.userdata.user_id, new_message.text_content)
+    #
+    # search_results = await search_memory(self.session.userdata.user_id, new_message.text_content)
+    # additional_context = "<memory>"
+    # if search_results:
+    #   additional_context += "\n\n".join(search_results)
+    # additional_context += "\n</memory>"
+    #
+    # turn_ctx.add_message(role="assistant", content=additional_context)
+    # try:
+    #   await self.update_chat_ctx(turn_ctx)
+    # except Exception as e:
+    #   logger.warning(f"Unable to update chat context: {e}")
 
     return await super().on_user_turn_completed(turn_ctx, new_message)
 
@@ -156,7 +156,7 @@ class ResponaAgent(Agent):
 
   async def on_enter(self) -> None:
     if self.session.output.audio_enabled:
-      await self.session.say("Hello, I am Respona. How can I help you today?", allow_interruptions=False)
+      await self.session.say("Hello, I am Respona. How can I help you today?")
 
 
 def prewarm(proc: JobProcess):
@@ -177,9 +177,11 @@ async def entrypoint(ctx: JobContext):
 
   @ctx.room.local_participant.register_rpc_method("set_audio_output")
   async def set_audio_output(data: RpcInvocationData) -> str:
+    await session.interrupt(force=True)
     req = json.loads(data.payload)
     session.input.set_audio_enabled(req["enabled"])
     session.output.set_audio_enabled(req["enabled"])
+    print("Set audio output to " + ("enabled" if req["enabled"] else "disabled"))
     return serialize_rpc_message({"type": "success"})
 
   @ctx.room.local_participant.register_rpc_method("set_voice")
@@ -200,10 +202,9 @@ async def entrypoint(ctx: JobContext):
       audio_enabled=True,
     ),
     room_output_options=RoomOutputOptions(
-      # If you don't want to send the transcription back to the room, set this to False
       transcription_enabled=True,
       audio_enabled=True,
-      sync_transcription=True,
+      sync_transcription=False,
     ),
   )
 
