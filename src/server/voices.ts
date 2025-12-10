@@ -3,7 +3,7 @@ export interface Voice {
   supportedLanguages: string[];
 }
 
-export const DEFAULT_VOICE_ID = "bIHbv24MWmeRgasZH58o";
+export const DEFAULT_VOICE_ID = "cgSgspJ2msm6clMCkdW9";
 
 export const voices: { [key: string]: Voice } = {
   bIHbv24MWmeRgasZH58o: {
