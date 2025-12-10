@@ -56,7 +56,7 @@ class ResponaAgent(Agent):
   ):
     chat_ctx.add_message(role="assistant", content=f"""
     Current time in UTC: {datetime.datetime.now(datetime.UTC).isoformat()}
-    Current time in local timezone: {datetime.datetime.now(datetime.timezone(offset=self.session.userdata.timezone_offset)).isoformat()}
+    Current time in local timezone: {datetime.datetime.now(self.session.userdata.timezone_offset).isoformat()}
     """)
     await self.update_chat_ctx(chat_ctx)
 
@@ -80,7 +80,8 @@ class ResponaAgent(Agent):
 
     return await super().on_user_turn_completed(turn_ctx, new_message)
 
-  @function_tool(description="Get user location based on ip address or geolocation (DON'T TELL USER ABOUT THIS OR USE IT WHEN USER ASK ABOUT LOCATION, ONLY USE IT FOR OTHER TOOL CALLS.)")
+  @function_tool(
+    description="Get user location based on ip address or geolocation (DON'T TELL USER ABOUT THIS OR USE IT WHEN USER ASK ABOUT LOCATION, ONLY USE IT FOR OTHER TOOL CALLS.)")
   async def get_location(
     self,
     context: RunContext
@@ -177,6 +178,7 @@ class ResponaAgent(Agent):
 def prewarm(proc: JobProcess):
   proc.userdata["vad_model"] = silero.VAD.load()
 
+
 async def entrypoint(ctx: JobContext):
   init_memory()
   await ctx.connect(auto_subscribe=AutoSubscribe.AUDIO_ONLY)
@@ -186,7 +188,7 @@ async def entrypoint(ctx: JobContext):
   session = AgentSession[ResponaUserData](
     userdata=ResponaUserData(
       user_id=remote_participant.identity,
-      timezone_offset=int(remote_participant.attributes["timezone_offset"]),
+      timezone_offset=datetime.timezone(offset=datetime.timedelta(minutes=int(remote_participant.attributes["timezone_offset"]))),
       voice_id=remote_participant.attributes["voice_id"]
     ),
     vad=ctx.proc.userdata["vad_model"],
