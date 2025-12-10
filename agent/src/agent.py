@@ -1,6 +1,6 @@
+import datetime
 import json
 import logging
-from typing import Any, Coroutine
 
 from dotenv import load_dotenv
 from livekit.agents import (
@@ -12,15 +12,14 @@ from livekit.agents import (
   WorkerOptions,
   cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess, llm,
 )
-
-from livekit.plugins import openai
 from livekit.plugins import assemblyai
 from livekit.plugins import elevenlabs
+from livekit.plugins import openai
 from livekit.plugins import silero
 from livekit.rtc import RpcInvocationData
 
-from rpc import AgentRPCClient, AgentRPCSuccess, parse_rpc_message, serialize_rpc_message
 from memory import save_memory, search_memory, init_memory
+from rpc import AgentRPCClient, parse_rpc_message, serialize_rpc_message
 from userdata import ResponaUserData
 from weather import get_current_weather_by_coords
 
@@ -45,6 +44,11 @@ class ResponaAgent(Agent):
     )
 
   async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
+    turn_ctx.add_message(role="assistant", content=f"""
+    Current time: {datetime.datetime.now(datetime.UTC).isoformat()}
+    """)
+    await self.update_chat_ctx(turn_ctx)
+
     await save_memory(self.session.userdata.user_id, new_message.text_content)
 
     search_results = await search_memory(self.session.userdata.user_id, new_message.text_content)
@@ -151,7 +155,8 @@ class ResponaAgent(Agent):
       return "Unable to remove reminder"
 
   async def on_enter(self) -> None:
-    await self.session.say("Hello, I am Respona. How can I help you today?", allow_interruptions=False)
+    if self.session.output.audio_enabled:
+      await self.session.say("Hello, I am Respona. How can I help you today?", allow_interruptions=False)
 
 
 def prewarm(proc: JobProcess):
@@ -166,8 +171,8 @@ async def entrypoint(ctx: JobContext):
   session = AgentSession[ResponaUserData](
     userdata=ResponaUserData(user_id=remote_participant.identity),
     vad=ctx.proc.userdata["vad_model"],
-    use_tts_aligned_transcript=False,
-    preemptive_generation=False,
+    min_interruption_words=1,
+    min_endpointing_delay=0.8,
   )
 
   @ctx.room.local_participant.register_rpc_method("set_audio_output")
