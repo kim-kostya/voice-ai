@@ -10,6 +10,7 @@ dependencies = [
     { name = "livekit" },
     { name = "livekit-agents", extra = ["assemblyai", "elevenlabs", "openai", "silero", "turn-detector"] },
     { name = "mem0ai" },
+    { name = "opencage" },
     { name = "orjson" },
     { name = "pyowm" },
     { name = "python-dotenv" },
@@ -20,6 +21,7 @@ requires-dist = [
     { name = "livekit", specifier = "~=1.0" },
     { name = "livekit-agents", extras = ["assemblyai", "elevenlabs", "openai", "silero", "turn-detector"], specifier = "~=1.2" },
     { name = "mem0ai", specifier = ">=1.0.0" },
+    { name = "opencage", specifier = ">=3.2.0" },
     { name = "orjson", specifier = ">=3.11.3" },
     { name = "pyowm", specifier = ">=3.5.0" },
     { name = "python-dotenv" },
@@ -1228,6 +1230,22 @@ wheels = [
 [package.optional-dependencies]
 realtime = [
     { name = "websockets" },
+]
+
+[[package]]
+name = "opencage"
+version = "3.2.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "aiohttp" },
+    { name = "backoff" },
+    { name = "certifi" },
+    { name = "requests" },
+    { name = "tqdm" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/86/a7/dc8796529bab6260ef58ee61b0081b37b8288c50ad3d6855ba498205b1cb/opencage-3.2.0.tar.gz", hash = "sha256:bb89e82a14c47f199be92528c401fd9c71c36deffd8dffb6bfb157d34d4755eb", size = 20280, upload-time = "2025-05-26T20:28:27.337Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/45/bb/16696d4dc4e9e81adc7a52590e2ccd6a0a0dda046fcdbc818d4e0a48dc3c/opencage-3.2.0-py3-none-any.whl", hash = "sha256:15a72cff6a3b59bfb2a2f65614bdafbbcd85e163acf01f6fbfa2465fa66d09dd", size = 23501, upload-time = "2025-05-26T20:28:26.281Z" },
 ]
 
 [[package]]
