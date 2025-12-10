@@ -207,7 +207,9 @@ async def entrypoint(ctx: JobContext):
 
   @ctx.room.local_participant.register_rpc_method("set_voice")
   async def set_voice(data: RpcInvocationData) -> str:
-    session.update_agent(ResponaAgent(voice_id=data.payload))
+    req = parse_rpc_message(data.payload)
+    session.userdata.voice_id = req["voiceId"]
+    session.update_agent(ResponaAgent(voice_id=session.userdata.voice_id))
     return serialize_rpc_message({"type": "success"})
 
   await session.start(
