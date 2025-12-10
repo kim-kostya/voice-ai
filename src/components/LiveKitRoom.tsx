@@ -64,6 +64,7 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
         setRoomState("connecting");
         const roomData = await trpcUtils.rooms.getRoomData.fetch({
           roomId: roomId as string,
+          timezoneOffset: new Date().getTimezoneOffset(),
         });
         await room.connect(roomData.wsUrl, roomData.token);
       } catch (error) {

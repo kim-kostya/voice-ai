@@ -13,6 +13,7 @@ export const roomsRouter = createTRPCRouter({
     .input(
       z.object({
         roomId: z.string().uuid(),
+        timezoneOffset: z.number().int(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -26,6 +27,9 @@ export const roomsRouter = createTRPCRouter({
           {
             identity: ctx.auth.userId,
             name: ctx.user?.fullName ?? "user",
+            attributes: {
+              timezone_offset: (input.timezoneOffset ?? 0).toString(),
+            },
           },
         );
 
