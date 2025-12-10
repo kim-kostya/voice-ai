@@ -1,6 +1,8 @@
 import datetime
 import json
 import logging
+from datetime import timezone
+from typing import AsyncIterable, Coroutine, Any
 
 from dotenv import load_dotenv
 from livekit.agents import (
@@ -10,15 +12,16 @@ from livekit.agents import (
   JobContext,
   RoomOutputOptions,
   WorkerOptions,
-  cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess, llm,
+  cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess, llm, FunctionTool, ModelSettings,
 )
+from livekit.agents.llm import RawFunctionTool
 from livekit.plugins import assemblyai
 from livekit.plugins import elevenlabs
 from livekit.plugins import openai
 from livekit.plugins import silero
 from livekit.rtc import RpcInvocationData
 
-from memory import save_memory, search_memory, init_memory
+from memory import init_memory
 from rpc import AgentRPCClient, parse_rpc_message, serialize_rpc_message
 from userdata import ResponaUserData
 from weather import get_current_weather_by_coords
@@ -43,11 +46,23 @@ class ResponaAgent(Agent):
       )
     )
 
-  async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
-    turn_ctx.add_message(role="assistant", content=f"""
-    Current time: {datetime.datetime.now(datetime.UTC).isoformat()}
+  async def llm_node(self, chat_ctx: llm.ChatContext, tools: list[FunctionTool | RawFunctionTool],
+                     model_settings: ModelSettings) -> (
+    AsyncIterable[llm.ChatChunk | str]
+    | Coroutine[Any, Any, AsyncIterable[llm.ChatChunk | str]]
+    | Coroutine[Any, Any, str]
+    | Coroutine[Any, Any, llm.ChatChunk]
+    | Coroutine[Any, Any, None]
+  ):
+    chat_ctx.add_message(role="assistant", content=f"""
+    Current time in UTC: {datetime.datetime.now(datetime.UTC).isoformat()}
+    Current time in local timezone: {datetime.datetime.now(datetime.timezone(offset=self.session.userdata.timezone)).isoformat()}
     """)
-    await self.update_chat_ctx(turn_ctx)
+    await self.update_chat_ctx(chat_ctx)
+
+    return super().llm_node(chat_ctx, tools, model_settings)
+
+  async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
 
     # await save_memory(self.session.userdata.user_id, new_message.text_content)
     #
@@ -169,7 +184,7 @@ async def entrypoint(ctx: JobContext):
   remote_participant = await ctx.wait_for_participant()
 
   session = AgentSession[ResponaUserData](
-    userdata=ResponaUserData(user_id=remote_participant.identity),
+    userdata=ResponaUserData(user_id=remote_participant.identity, timezone_offset=int(remote_participant.attributes["timezone_offset"])),
     vad=ctx.proc.userdata["vad_model"],
     min_interruption_words=1,
     min_endpointing_delay=0.8,
