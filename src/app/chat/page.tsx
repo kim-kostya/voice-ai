@@ -79,7 +79,7 @@ function ChatInput() {
           <Button
             onClick={handleSendMessage}
             disabled={!inputValue.trim()}
-            className="bg-teal-600 hover:bg-teal-700 flex-shrink-0"
+            className="bg-teal-600 hover:bg-teal-700 shrink-0"
             size="icon"
           >
             <Send className="w-4 h-4" />
