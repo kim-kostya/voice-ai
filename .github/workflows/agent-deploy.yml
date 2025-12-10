@@ -23,7 +23,6 @@ jobs:
           LIVEKIT_URL: ${{ secrets.LIVEKIT_URL }}
           LIVEKIT_API_KEY: ${{ secrets.LIVEKIT_API_KEY }}
           LIVEKIT_API_SECRET: ${{ secrets.LIVEKIT_API_SECRET }}
-          SECRET_LIST: ${{ secrets.LIVEKIT_SECRET_LIST }}
         with:
           OPERATION: deploy
           WORKING_DIRECTORY: agent/
