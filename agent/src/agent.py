@@ -34,7 +34,7 @@ logger = logging.getLogger("agent")
 class ResponaAgent(Agent):
   def __init__(self, voice_id: str):
     super().__init__(
-      instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner.",
+      instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner and try to be more friendly.",
       stt=assemblyai.STT(),
       llm=openai.llm.LLM(
         base_url="https://openrouter.ai/api/v1",
@@ -225,7 +225,7 @@ async def entrypoint(ctx: JobContext):
     room_output_options=RoomOutputOptions(
       transcription_enabled=True,
       audio_enabled=True,
-      sync_transcription=False,
+      sync_transcription=True,
     ),
   )
 
