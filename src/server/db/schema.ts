@@ -8,7 +8,7 @@ export const users = sqliteTable("users", {
 
 export const reminders = sqliteTable("reminders", {
   id: int("id").primaryKey({ autoIncrement: true }),
-  createdAt: text("created_at").notNull().default("CURRENT_TIMESTAMP"),
+  createdAt: text("created_at").notNull().default(new Date().toISOString()),
   authorId: text("author_id")
     .notNull()
     .references(() => users.id),

@@ -147,11 +147,11 @@ function LiveKitAgent() {
 
   useAgentRpcMethod(
     "add_reminder",
-    z.object({ text: z.string(), time: z.date() }),
+    z.object({ text: z.string(), time: z.string() }),
     async (data) => {
       await addReminder.mutateAsync({
         text: data.text,
-        time: data.time,
+        time: new Date(data.time),
       });
 
       return {

@@ -47,3 +47,6 @@ next-env.d.ts
 .venv/
 # clerk configuration (can include secrets)
 /.clerk/
+
+public/sw*
+public/swe-worker*
