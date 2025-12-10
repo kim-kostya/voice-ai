@@ -32,7 +32,7 @@ logger = logging.getLogger("agent")
 
 
 class ResponaAgent(Agent):
-  def __init__(self):
+  def __init__(self, initial_voice_id: str):
     super().__init__(
       instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner.",
       stt=assemblyai.STT(),
@@ -41,7 +41,7 @@ class ResponaAgent(Agent):
         model="openai/gpt-4.1-nano"
       ),
       tts=elevenlabs.TTS(
-        voice_id=self.session.userdata.voice_id,
+        voice_id=initial_voice_id,
         model="eleven_multilingual_v2"
       )
     )
@@ -213,7 +213,9 @@ async def entrypoint(ctx: JobContext):
     return serialize_rpc_message({"type": "success"})
 
   await session.start(
-    agent=ResponaAgent(),
+    agent=ResponaAgent(
+      initial_voice_id=remote_participant.attributes["voice_id"]
+    ),
     room=ctx.room,
     room_input_options=RoomInputOptions(
       close_on_disconnect=True,
