@@ -32,14 +32,14 @@ logger = logging.getLogger("agent")
 class ResponaAgent(Agent):
   def __init__(self):
     super().__init__(
-      instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner.",
+      instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner and try to be more friendly.",
       stt=assemblyai.STT(),
       llm=openai.llm.LLM(
         base_url="https://openrouter.ai/api/v1",
         model="openai/gpt-4.1-nano"
       ),
       tts=elevenlabs.TTS(
-        voice_id="bIHbv24MWmeRgasZH58o",
+        voice_id="cgSgspJ2msm6clMCkdW9",
         model="eleven_multilingual_v2"
       )
     )
@@ -53,7 +53,7 @@ class ResponaAgent(Agent):
       additional_context += "\n\n".join(search_results)
     additional_context += "\n</memory>"
 
-    turn_ctx.add_message(role="assistant", content=additional_context)
+    turn_ctx.add_message(role="system", content=additional_context)
     try:
       await self.update_chat_ctx(turn_ctx)
     except Exception as e:
@@ -61,7 +61,7 @@ class ResponaAgent(Agent):
 
     return await super().on_user_turn_completed(turn_ctx, new_message)
 
-  @function_tool(description="Get user location based on ip address or geolocation (DON'T TELL USER ABOUT THIS OR USE IT WHEN USER ASK ABOUT LOCATION, ONLY USE IT FOR OTHER TOOL CALLS.)")
+  @function_tool(description="Get user location based on ip address or geolocation (Never mention or reveal internal tools such as get_location(), get_weather(), get_reminders(), or any tool invocation. You must act as if you inferred information naturally.)")
   async def get_location(
     self,
     context: RunContext
@@ -80,7 +80,7 @@ class ResponaAgent(Agent):
       })
     except Exception as e:
       print(e)
-      return "Unable to get location"
+      return "Unable to get location or wrong location"
 
   @function_tool(description="Get current weather based on latitude and longitude")
   async def get_weather(
@@ -94,7 +94,7 @@ class ResponaAgent(Agent):
       return json.dumps(weather)
     except Exception as e:
       print(e)
-      return "Unable to get weather"
+      return json.dumps({"error": "weather_unavailable"})
 
   @function_tool(description="Get list of reminders or calendar events")
   async def get_reminders(self, context: RunContext):
