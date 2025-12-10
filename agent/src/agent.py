@@ -56,7 +56,7 @@ class ResponaAgent(Agent):
   ):
     chat_ctx.add_message(role="assistant", content=f"""
     Current time in UTC: {datetime.datetime.now(datetime.UTC).isoformat()}
-    Current time in local timezone: {datetime.datetime.now(datetime.timezone(offset=self.session.userdata.timezone)).isoformat()}
+    Current time in local timezone: {datetime.datetime.now(datetime.timezone(offset=self.session.userdata.timezone_offset)).isoformat()}
     """)
     await self.update_chat_ctx(chat_ctx)
 
@@ -209,7 +209,10 @@ async def entrypoint(ctx: JobContext):
     old_tts = session._tts
     new_tts = elevenlabs.TTS(voice_id=req["voiceId"], model="eleven_multilingual_v2")
     session._tts = new_tts
-    old_tts.close()
+
+    if old_tts is not None:
+      old_tts.close()
+
     return serialize_rpc_message({"type": "success"})
 
   await session.start(
