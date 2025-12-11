@@ -1,7 +1,6 @@
 import datetime
 import json
 import logging
-from datetime import timezone
 from typing import AsyncIterable, Coroutine, Any
 
 from dotenv import load_dotenv
@@ -24,7 +23,7 @@ from livekit.rtc import RpcInvocationData
 from memory import init_memory
 from rpc import AgentRPCClient, parse_rpc_message, serialize_rpc_message
 from userdata import ResponaUserData
-from weather import get_current_weather_by_coords, get_current_weather_by_coords
+from weather import get_coords_by_location, get_current_weather_by_coords
 
 load_dotenv()
 
