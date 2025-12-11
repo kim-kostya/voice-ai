@@ -85,7 +85,7 @@ export function useAgentRemoteRpcMethod<
   outputSchema: TOutputSchema,
 ): (input: z.infer<TInputSchema>) => Promise<z.infer<TOutputSchema>> {
   const roomContext = useRoomContext();
-  const { agent } = useVoiceAssistant();
+  const { agent } = useLiveKit();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: no need to recalculate on roomContext or outputSchema change
   return useCallback<z.infer<TOutputSchema>>(

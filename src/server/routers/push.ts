@@ -31,4 +31,15 @@ export const pushRouter = {
       ctx.auth.userId,
     );
   }),
+  sendTestReminderNotification: protectedProcedure.mutation(async ({ ctx }) => {
+    await sendPushNotification(
+      {
+        type: "reminder",
+        reminderId: 1,
+        time: new Date().toISOString(),
+        text: "Test reminder notification",
+      },
+      ctx.auth.userId,
+    );
+  }),
 };

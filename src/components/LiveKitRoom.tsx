@@ -15,7 +15,7 @@ import { trpc } from "@/lib/trpc";
 
 export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
   const trpcUtils = trpc.useUtils();
-  const { room, setRoom, volume, roomState, setRoomState, setVoiceId } =
+  const { room, volume, roomState, setRoom, setRoomState, setVoiceId } =
     useLiveKit();
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
 
@@ -112,11 +112,16 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
 }
 
 function LiveKitAgent() {
-  const { setAgentState } = useLiveKit();
-  const { state } = useVoiceAssistant();
+  const { setAgentState, setAgent } = useLiveKit();
+  const { state, agent } = useVoiceAssistant();
   const trpcUtils = trpc.useUtils();
   const addReminder = trpc.reminders.addReminder.useMutation();
   const removeReminder = trpc.reminders.removeReminder.useMutation();
+
+  useEffect(() => {
+    if (!agent) return;
+    setAgent(agent);
+  }, [agent, setAgent]);
 
   useAgentRpcMethod(
     "get_current_voice",

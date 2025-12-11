@@ -54,7 +54,7 @@ self.addEventListener("push", (event) => {
 
       event.waitUntil(
         self.registration.showNotification("Reminder", {
-          body: parsedData.type,
+          body: parsedData.text,
           icon: "/icons/icon-192x192.png",
           badge: "/icons/badge-72x72.png",
           data: `/?reminder_id=${parsedData.reminderId}`,

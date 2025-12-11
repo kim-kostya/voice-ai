@@ -14,10 +14,16 @@ export function DebugPopover() {
   const { pushNotificationSubscription, setPushNotificationSubscription } =
     useNotificationsStore();
   const sendTestNotification = trpc.push.sendTestNotification.useMutation();
+  const sendTestReminderNotification =
+    trpc.push.sendTestReminderNotification.useMutation();
   const subscribe = trpc.push.subscribe.useMutation();
 
   const handleSendTestNotification = async () => {
     await sendTestNotification.mutateAsync();
+  };
+
+  const handleSendTestReminderNotification = async () => {
+    await sendTestReminderNotification.mutateAsync();
   };
 
   const requestNotificationPermission = async () => {
@@ -103,6 +109,14 @@ export function DebugPopover() {
             onClick={handleSendTestNotification}
           >
             Test Push notification
+          </Button>
+          <Button
+            variant="outline"
+            size="icon"
+            className="w-full justify-center"
+            onClick={handleSendTestReminderNotification}
+          >
+            Test Reminder Notification
           </Button>
         </div>
       </PopoverContent>
