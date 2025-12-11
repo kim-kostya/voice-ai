@@ -186,8 +186,7 @@ class ResponaAgent(Agent):
       return "Unable to remove reminder"
 
   async def on_enter(self) -> None:
-    if self.session.output.audio_enabled:
-      await self.session.say("Hello, I am Respona. How can I help you today?")
+    await self.session.say("Hello, I am Respona. How can I help you today?")
 
 
 def prewarm(proc: JobProcess):
@@ -208,7 +207,7 @@ async def entrypoint(ctx: JobContext):
     ),
     vad=ctx.proc.userdata["vad_model"],
     use_tts_aligned_transcript=True,
-    preemptive_generation=True,
+    preemptive_generation=False,
     min_interruption_words=1,
     min_endpointing_delay=0.8,
   )
@@ -231,8 +230,10 @@ async def entrypoint(ctx: JobContext):
 
   @ctx.room.local_participant.register_rpc_method("notify_about_reminder")
   async def notify_about_reminder(data: RpcInvocationData) -> str:
+    print("Received reminder notification")
     req = parse_rpc_message(data.payload)
 
+    await session.interrupt(force=True)
     await session.generate_reply(
       instructions="User's reminder time was reached. Notify user about reminder.",
       user_input=f"""
