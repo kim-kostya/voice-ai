@@ -137,6 +137,15 @@ export interface CurrentVoiceRPCMessage {
   voiceId: string;
 }
 
+export interface ReminderNotificationRPCMessage {
+  type: "reminder_notification";
+  reminder: {
+    id: number;
+    time: Date;
+    text: string;
+  };
+}
+
 export interface AgentRPCError {
   type: "error";
   message: string;
