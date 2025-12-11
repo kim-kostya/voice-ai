@@ -5,6 +5,7 @@ import { ChatHistoryPopover } from "@/components/popover/ChatHistoryPopover";
 import { DebugPopover } from "@/components/popover/DebugPopover";
 import { VoiceModelSettingsPopover } from "@/components/popover/VoiceModelSettingsPopover";
 import { VolumeControlPopover } from "@/components/popover/VolumeControlPopover";
+import { ReminderPushNotificationHandler } from "@/components/ReminderPushNotificationHandler";
 import VoiceButton from "@/components/VoiceButton";
 import { VoiceTranscriptionHandler } from "@/components/VoiceTranscriptionHandler";
 import { useAgentAudioOutput } from "@/lib/hooks/agent";
@@ -22,6 +23,7 @@ export default function Home() {
         <CalendarPopover />
         {process.env.NODE_ENV === "development" && <DebugPopover />}
         <VoiceTranscriptionHandler />
+        <ReminderPushNotificationHandler />
       </div>
     </main>
   );

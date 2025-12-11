@@ -15,7 +15,8 @@ export async function POST(): Promise<Response> {
       const payload: PushNotification = {
         type: "reminder",
         reminderId: pastReminder.id,
-        textContent: pastReminder.text,
+        text: pastReminder.text,
+        time: pastReminder.time,
       };
 
       await sendPushNotification(payload, pastReminder.authorId);

@@ -9,7 +9,8 @@ export const TestPushNotification = z.object({
 export const ReminderPushNotification = z.object({
   type: z.literal("reminder"),
   reminderId: z.number(),
-  textContent: z.string(),
+  time: z.string(),
+  text: z.string(),
 });
 
 export type PushNotification =

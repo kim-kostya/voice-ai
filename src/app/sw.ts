@@ -46,6 +46,12 @@ self.addEventListener("push", (event) => {
     case "reminder": {
       const parsedData = ReminderPushNotification.parse(data);
 
+      const channel = new BroadcastChannel("reminder-notification-channel");
+      channel.postMessage({
+        time: parsedData.time,
+        text: parsedData.text,
+      });
+
       event.waitUntil(
         self.registration.showNotification("Reminder", {
           body: parsedData.type,
@@ -72,6 +78,7 @@ self.addEventListener("notificationclick", (event) => {
         for (const client of clientList) {
           if (client.url === "/" && "focus" in client) return client.focus();
         }
+
         // Otherwise open a new window
         if (clients.openWindow)
           return clients.openWindow(event.notification.data || "/");
