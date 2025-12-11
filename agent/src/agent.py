@@ -234,9 +234,18 @@ async def entrypoint(ctx: JobContext):
     req = parse_rpc_message(data.payload)
 
     await session.generate_reply(
-      user_input="""
+      instructions="User's reminder time was reached. Notify user about reminder.",
+      user_input=f"""
+      <reminder>
+        <time>{req["reminder"]["time"]}</time>
+        <text>
+        {req["reminder"]["text"]}
+        </text>
+      </reminder>
       """
     )
+
+    return serialize_rpc_message({"type": "success"})
 
   await session.start(
     agent=ResponaAgent(
