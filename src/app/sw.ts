@@ -51,7 +51,7 @@ self.addEventListener("push", (event) => {
           body: parsedData.type,
           icon: "/icons/icon-192x192.png",
           badge: "/icons/badge-72x72.png",
-          data: `https://voiceai.litepas.me?reminder_id=${parsedData.reminderId}`,
+          data: `/?reminder_id=${parsedData.reminderId}`,
         }),
       );
 
