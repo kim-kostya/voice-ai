@@ -54,7 +54,6 @@ class ResponaAgent(Agent):
     | Coroutine[Any, Any, None]
   ):
     chat_ctx.add_message(role="assistant", content=f"""
-    Current time in UTC: {datetime.datetime.now(datetime.UTC).isoformat()}
     Current time in local timezone: {datetime.datetime.now(self.session.userdata.timezone_offset).isoformat()}
     """)
     await self.update_chat_ctx(chat_ctx)
@@ -150,7 +149,7 @@ class ResponaAgent(Agent):
   Add reminder to calendar
   
   @param reminder_text: Reminder text
-  @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss), UTC time
+  @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss) of local timezone
   """)
   async def add_reminder(self, context: RunContext, reminder_text: str, reminder_time: str):
     try:
@@ -161,7 +160,7 @@ class ResponaAgent(Agent):
 
       await rpc_client.add_reminder({
         "text": reminder_text,
-        "time": reminder_time
+        "time": datetime.datetime.fromisoformat(reminder_time).astimezone(datetime.timezone.utc).isoformat()
       })
       return "Reminder added successfully"
     except Exception as e:
@@ -229,6 +228,15 @@ async def entrypoint(ctx: JobContext):
     session.userdata.voice_id = req["voiceId"]
     session.update_agent(ResponaAgent(voice_id=session.userdata.voice_id))
     return serialize_rpc_message({"type": "success"})
+
+  @ctx.room.local_participant.register_rpc_method("notify_about_reminder")
+  async def notify_about_reminder(data: RpcInvocationData) -> str:
+    req = parse_rpc_message(data.payload)
+
+    await session.generate_reply(
+      user_input="""
+      """
+    )
 
   await session.start(
     agent=ResponaAgent(
