@@ -1,5 +1,6 @@
 import type { PrecacheEntry, SerwistGlobalConfig } from "serwist";
 import { addEventListeners, createSerwist } from "serwist";
+import { ReminderPushNotification, TestPushNotification } from "@/lib/push";
 
 declare global {
   interface WorkerGlobalScope extends SerwistGlobalConfig {
@@ -24,16 +25,39 @@ addEventListeners(serwist);
 
 // 2. Add Push Event Listener
 self.addEventListener("push", (event) => {
-  const data = event.data?.json() ?? { title: "New Notification" };
+  const data = event.data?.json();
 
-  event.waitUntil(
-    self.registration.showNotification(data.title, {
-      body: data.body || "You have a new update!",
-      icon: "/icons/icon-192x192.png", // Path to your PWA icon
-      badge: "/icons/badge-72x72.png", // Small monochrome icon for Android
-      data: data.url, // Custom data to use in the click handler
-    }),
-  );
+  if (!data) return;
+  if (!("type" in data)) return;
+
+  switch (data.type) {
+    case "test": {
+      const parsedData = TestPushNotification.parse(data);
+      event.waitUntil(
+        self.registration.showNotification(parsedData.title, {
+          body: parsedData.body,
+          icon: "/icons/icon-192x192.png",
+          badge: "/icons/badge-72x72.png",
+          data: "https://voiceai.litepas.me",
+        }),
+      );
+      break;
+    }
+    case "reminder": {
+      const parsedData = ReminderPushNotification.parse(data);
+
+      event.waitUntil(
+        self.registration.showNotification("Reminder", {
+          body: parsedData.type,
+          icon: "/icons/icon-192x192.png",
+          badge: "/icons/badge-72x72.png",
+          data: `https://voiceai.litepas.me?reminder_id=${parsedData.reminderId}`,
+        }),
+      );
+
+      break;
+    }
+  }
 });
 
 // 3. Add Click Handler

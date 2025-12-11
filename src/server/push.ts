@@ -1,3 +1,4 @@
+import { eq } from "drizzle-orm";
 import type { PushSubscription } from "web-push";
 import webpush from "web-push";
 import type { PushNotification } from "@/lib/push";
@@ -18,8 +19,14 @@ webpush.setVapidDetails(
   process.env.VAPID_PRIVATE_KEY,
 );
 
-export async function sendPushNotification(notification: PushNotification) {
-  const subscriptions = await db.select().from(pushSubscriptions);
+export async function sendPushNotification(
+  notification: PushNotification,
+  userId: string,
+) {
+  const subscriptions = await db
+    .select()
+    .from(pushSubscriptions)
+    .where(eq(pushSubscriptions.userId, userId));
   for (const subscriptionInfo of subscriptions) {
     const subscription: PushSubscription = {
       endpoint: subscriptionInfo.endpoint,

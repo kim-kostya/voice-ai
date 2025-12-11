@@ -21,11 +21,14 @@ export const pushRouter = {
         auth: input.auth,
       });
     }),
-  sendTestNotification: protectedProcedure.mutation(async () => {
-    await sendPushNotification({
-      type: "test",
-      title: "Test notification",
-      body: "Test notification",
-    });
+  sendTestNotification: protectedProcedure.mutation(async ({ ctx }) => {
+    await sendPushNotification(
+      {
+        type: "test",
+        title: "Test notification",
+        body: "Test notification",
+      },
+      ctx.auth.userId,
+    );
   }),
 };

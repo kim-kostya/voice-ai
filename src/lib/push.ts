@@ -1,7 +1,17 @@
-export interface TestPushNotification {
-  type: "test";
-  title: string;
-  body: string;
-}
+import { z } from "zod";
 
-export type PushNotification = TestPushNotification;
+export const TestPushNotification = z.object({
+  type: z.literal("test"),
+  title: z.string(),
+  body: z.string(),
+});
+
+export const ReminderPushNotification = z.object({
+  type: z.literal("reminder"),
+  reminderId: z.number(),
+  textContent: z.string(),
+});
+
+export type PushNotification =
+  | z.infer<typeof TestPushNotification>
+  | z.infer<typeof ReminderPushNotification>;
