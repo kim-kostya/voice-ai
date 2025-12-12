@@ -1,6 +1,8 @@
+import datetime
 import json
 import logging
-from typing import Any, Coroutine
+from datetime import timezone
+from typing import AsyncIterable, Coroutine, Any
 
 from dotenv import load_dotenv
 from livekit.agents import (
@@ -10,17 +12,17 @@ from livekit.agents import (
   JobContext,
   RoomOutputOptions,
   WorkerOptions,
-  cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess, llm,
+  cli, function_tool, RunContext, get_job_context, RoomInputOptions, JobProcess, llm, FunctionTool, ModelSettings,
 )
-
-from livekit.plugins import openai
+from livekit.agents.llm import RawFunctionTool
 from livekit.plugins import assemblyai
 from livekit.plugins import elevenlabs
+from livekit.plugins import openai
 from livekit.plugins import silero
 from livekit.rtc import RpcInvocationData
 
-from rpc import AgentRPCClient, AgentRPCSuccess, parse_rpc_message, serialize_rpc_message
-from memory import save_memory, search_memory, init_memory
+from memory import init_memory
+from rpc import AgentRPCClient, parse_rpc_message, serialize_rpc_message
 from userdata import ResponaUserData
 from weather import get_current_weather_by_coords
 
@@ -30,7 +32,7 @@ logger = logging.getLogger("agent")
 
 
 class ResponaAgent(Agent):
-  def __init__(self):
+  def __init__(self, voice_id: str):
     super().__init__(
       instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner and try to be more friendly.",
       stt=assemblyai.STT(),
@@ -39,29 +41,47 @@ class ResponaAgent(Agent):
         model="openai/gpt-4.1-nano"
       ),
       tts=elevenlabs.TTS(
-        voice_id="cgSgspJ2msm6clMCkdW9",
+        voice_id=voice_id,
         model="eleven_multilingual_v2"
       )
     )
 
+  async def llm_node(self, chat_ctx: llm.ChatContext, tools: list[FunctionTool | RawFunctionTool],
+                     model_settings: ModelSettings) -> (
+    AsyncIterable[llm.ChatChunk | str]
+    | Coroutine[Any, Any, AsyncIterable[llm.ChatChunk | str]]
+    | Coroutine[Any, Any, str]
+    | Coroutine[Any, Any, llm.ChatChunk]
+    | Coroutine[Any, Any, None]
+  ):
+    chat_ctx.add_message(role="assistant", content=f"""
+    Current time in UTC: {datetime.datetime.now(datetime.UTC).isoformat()}
+    Current time in local timezone: {datetime.datetime.now(self.session.userdata.timezone_offset).isoformat()}
+    """)
+    await self.update_chat_ctx(chat_ctx)
+
+    return super().llm_node(chat_ctx, tools, model_settings)
+
   async def on_user_turn_completed(self, turn_ctx: llm.ChatContext, new_message: llm.ChatMessage) -> None:
-    await save_memory(self.session.userdata.user_id, new_message.text_content)
 
-    search_results = await search_memory(self.session.userdata.user_id, new_message.text_content)
-    additional_context = "<memory>"
-    if search_results:
-      additional_context += "\n\n".join(search_results)
-    additional_context += "\n</memory>"
-
-    turn_ctx.add_message(role="system", content=additional_context)
-    try:
-      await self.update_chat_ctx(turn_ctx)
-    except Exception as e:
-      logger.warning(f"Unable to update chat context: {e}")
+    # await save_memory(self.session.userdata.user_id, new_message.text_content)
+    #
+    # search_results = await search_memory(self.session.userdata.user_id, new_message.text_content)
+    # additional_context = "<memory>"
+    # if search_results:
+    #   additional_context += "\n\n".join(search_results)
+    # additional_context += "\n</memory>"
+    #
+    # turn_ctx.add_message(role="assistant", content=additional_context)
+    # try:
+    #   await self.update_chat_ctx(turn_ctx)
+    # except Exception as e:
+    #   logger.warning(f"Unable to update chat context: {e}")
 
     return await super().on_user_turn_completed(turn_ctx, new_message)
 
-  @function_tool(description="Get user location based on ip address or geolocation (Never mention or reveal internal tools such as get_location(), get_weather(), get_reminders(), or any tool invocation. You must act as if you inferred information naturally.)")
+  @function_tool(
+    description="Get user location based on ip address or geolocation (DON'T TELL USER ABOUT THIS OR USE IT WHEN USER ASK ABOUT LOCATION, ONLY USE IT FOR OTHER TOOL CALLS.)")
   async def get_location(
     self,
     context: RunContext
@@ -151,11 +171,13 @@ class ResponaAgent(Agent):
       return "Unable to remove reminder"
 
   async def on_enter(self) -> None:
-    await self.session.say("Hello, I am Respona. How can I help you today?", allow_interruptions=False)
+    if self.session.output.audio_enabled:
+      await self.session.say("Hello, I am Respona. How can I help you today?")
 
 
 def prewarm(proc: JobProcess):
   proc.userdata["vad_model"] = silero.VAD.load()
+
 
 async def entrypoint(ctx: JobContext):
   init_memory()
@@ -164,30 +186,36 @@ async def entrypoint(ctx: JobContext):
   remote_participant = await ctx.wait_for_participant()
 
   session = AgentSession[ResponaUserData](
-    userdata=ResponaUserData(user_id=remote_participant.identity),
+    userdata=ResponaUserData(
+      user_id=remote_participant.identity,
+      timezone_offset=datetime.timezone(offset=datetime.timedelta(minutes=int(remote_participant.attributes["timezone_offset"]))),
+      voice_id=remote_participant.attributes["voice_id"]
+    ),
     vad=ctx.proc.userdata["vad_model"],
-    use_tts_aligned_transcript=False,
-    preemptive_generation=False,
+    min_interruption_words=1,
+    min_endpointing_delay=0.8,
   )
 
   @ctx.room.local_participant.register_rpc_method("set_audio_output")
   async def set_audio_output(data: RpcInvocationData) -> str:
+    await session.interrupt(force=True)
     req = json.loads(data.payload)
     session.input.set_audio_enabled(req["enabled"])
     session.output.set_audio_enabled(req["enabled"])
+    print("Set audio output to " + ("enabled" if req["enabled"] else "disabled"))
     return serialize_rpc_message({"type": "success"})
 
   @ctx.room.local_participant.register_rpc_method("set_voice")
   async def set_voice(data: RpcInvocationData) -> str:
     req = parse_rpc_message(data.payload)
-    old_tts = session._tts
-    new_tts = elevenlabs.TTS(voice_id=req["voiceId"], model="eleven_multilingual_v2")
-    session._tts = new_tts
-    old_tts.close()
+    session.userdata.voice_id = req["voiceId"]
+    session.update_agent(ResponaAgent(voice_id=session.userdata.voice_id))
     return serialize_rpc_message({"type": "success"})
 
   await session.start(
-    agent=ResponaAgent(),
+    agent=ResponaAgent(
+      voice_id=remote_participant.attributes["voice_id"]
+    ),
     room=ctx.room,
     room_input_options=RoomInputOptions(
       close_on_disconnect=True,
@@ -195,10 +223,9 @@ async def entrypoint(ctx: JobContext):
       audio_enabled=True,
     ),
     room_output_options=RoomOutputOptions(
-      # If you don't want to send the transcription back to the room, set this to False
       transcription_enabled=True,
       audio_enabled=True,
-      sync_transcription=True,
+      sync_transcription=False,
     ),
   )
 
