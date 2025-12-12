@@ -1,5 +1,6 @@
 import os
 
+from opencage.geocoder import OpenCageGeocode
 from dotenv import load_dotenv
 from pyowm import OWM
 
@@ -17,3 +18,9 @@ def get_current_weather_by_coords(lat: float, lon: float) -> dict:
     "status": weather.detailed_status,
     "icon": weather.weather_icon_name
   }
+
+def get_coords_by_location(query: str) -> tuple[float, float]:
+  api_key = os.getenv("OPENCAGE_API_KEY")
+  geocoder = OpenCageGeocode(api_key)
+  results = geocoder.geocode(query)
+  return results[0].latitude, results[0].longitude

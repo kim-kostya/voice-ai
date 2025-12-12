@@ -1,7 +1,7 @@
 import datetime
 import json
 import logging
-from datetime import timezone
+import textwrap
 from typing import AsyncIterable, Coroutine, Any
 
 from dotenv import load_dotenv
@@ -24,7 +24,7 @@ from livekit.rtc import RpcInvocationData
 from memory import init_memory
 from rpc import AgentRPCClient, parse_rpc_message, serialize_rpc_message
 from userdata import ResponaUserData
-from weather import get_current_weather_by_coords
+from weather import get_coords_by_location, get_current_weather_by_coords
 
 load_dotenv()
 
@@ -55,7 +55,6 @@ class ResponaAgent(Agent):
     | Coroutine[Any, Any, None]
   ):
     chat_ctx.add_message(role="assistant", content=f"""
-    Current time in UTC: {datetime.datetime.now(datetime.UTC).isoformat()}
     Current time in local timezone: {datetime.datetime.now(self.session.userdata.timezone_offset).isoformat()}
     """)
     await self.update_chat_ctx(chat_ctx)
@@ -100,7 +99,24 @@ class ResponaAgent(Agent):
       })
     except Exception as e:
       print(e)
-      return "Unable to get location or wrong location"
+      return "Unable to get location"
+
+  @function_tool(description="Get location coordinates based on location name")
+  async def get_coords_by_location(
+    self,
+    context: RunContext,
+    location: str
+  ):
+    try:
+      context.disallow_interruptions()
+      coords = get_coords_by_location(location)
+      return json.dumps({
+        "latitude": coords[0],
+        "longitude": coords[1]
+      })
+    except Exception as e:
+      print(e)
+      return json.dumps({"error": "location_unavailable"})
 
   @function_tool(description="Get current weather based on latitude and longitude")
   async def get_weather(
@@ -114,7 +130,7 @@ class ResponaAgent(Agent):
       return json.dumps(weather)
     except Exception as e:
       print(e)
-      return json.dumps({"error": "weather_unavailable"})
+      return "Unable to get weather"
 
   @function_tool(description="Get list of reminders or calendar events")
   async def get_reminders(self, context: RunContext):
@@ -134,7 +150,7 @@ class ResponaAgent(Agent):
   Add reminder to calendar
   
   @param reminder_text: Reminder text
-  @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss), UTC time
+  @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss) of local timezone
   """)
   async def add_reminder(self, context: RunContext, reminder_text: str, reminder_time: str):
     try:
@@ -145,7 +161,7 @@ class ResponaAgent(Agent):
 
       await rpc_client.add_reminder({
         "text": reminder_text,
-        "time": reminder_time
+        "time": datetime.datetime.fromisoformat(reminder_time).astimezone(datetime.timezone.utc).isoformat()
       })
       return "Reminder added successfully"
     except Exception as e:
@@ -171,8 +187,7 @@ class ResponaAgent(Agent):
       return "Unable to remove reminder"
 
   async def on_enter(self) -> None:
-    if self.session.output.audio_enabled:
-      await self.session.say("Hello, I am Respona. How can I help you today?")
+    await self.session.say("Hello, I am Respona. How can I help you today?")
 
 
 def prewarm(proc: JobProcess):
@@ -192,6 +207,8 @@ async def entrypoint(ctx: JobContext):
       voice_id=remote_participant.attributes["voice_id"]
     ),
     vad=ctx.proc.userdata["vad_model"],
+    use_tts_aligned_transcript=True,
+    preemptive_generation=False,
     min_interruption_words=1,
     min_endpointing_delay=0.8,
   )
@@ -212,6 +229,26 @@ async def entrypoint(ctx: JobContext):
     session.update_agent(ResponaAgent(voice_id=session.userdata.voice_id))
     return serialize_rpc_message({"type": "success"})
 
+  @ctx.room.local_participant.register_rpc_method("notify_about_reminder")
+  async def notify_about_reminder(data: RpcInvocationData) -> str:
+    print("Received reminder notification")
+    req = parse_rpc_message(data.payload)
+
+    await session.interrupt(force=True)
+    await session.generate_reply(
+      instructions="User's reminder time was reached. Notify user about reminder.",
+      user_input=f"""
+      <reminder>
+        <time>{req["reminder"]["time"]}</time>
+        <text>
+        {textwrap.indent(req["reminder"]["text"], "  ", lambda line: line != 0)}
+        </text>
+      </reminder>
+      """
+    )
+
+    return serialize_rpc_message({"type": "success"})
+
   await session.start(
     agent=ResponaAgent(
       voice_id=remote_participant.attributes["voice_id"]
@@ -225,7 +262,7 @@ async def entrypoint(ctx: JobContext):
     room_output_options=RoomOutputOptions(
       transcription_enabled=True,
       audio_enabled=True,
-      sync_transcription=False,
+      sync_transcription=True,
     ),
   )
 
