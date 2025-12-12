@@ -34,7 +34,7 @@ logger = logging.getLogger("agent")
 class ResponaAgent(Agent):
   def __init__(self, voice_id: str):
     super().__init__(
-      instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner.",
+      instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner and try to be more friendly.",
       stt=assemblyai.STT(),
       llm=openai.llm.LLM(
         base_url="https://openrouter.ai/api/v1",
@@ -100,7 +100,7 @@ class ResponaAgent(Agent):
       })
     except Exception as e:
       print(e)
-      return "Unable to get location"
+      return "Unable to get location or wrong location"
 
   @function_tool(description="Get current weather based on latitude and longitude")
   async def get_weather(
@@ -114,7 +114,7 @@ class ResponaAgent(Agent):
       return json.dumps(weather)
     except Exception as e:
       print(e)
-      return "Unable to get weather"
+      return json.dumps({"error": "weather_unavailable"})
 
   @function_tool(description="Get list of reminders or calendar events")
   async def get_reminders(self, context: RunContext):
