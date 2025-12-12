@@ -3,6 +3,7 @@
 import * as React from "react";
 import { useRef } from "react";
 import { Calendar } from "@/components/ui/calendar";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Tooltip,
@@ -22,11 +23,8 @@ type ReminderEvent = {
 export function CalendarComponent({ className }: { className?: string }) {
   const scrollRef = useRef<HTMLDivElement>(null);
   const [date, setDate] = React.useState<Date | undefined>(new Date());
-
-  // Fetch reminders
   const reminders = trpc.reminders.getReminders.useQuery();
 
-  // Group events by yyyy-mm-dd
   const eventsByDate = React.useMemo(() => {
     if (!reminders.data) return {} as Record<string, ReminderEvent[]>;
 
@@ -43,12 +41,18 @@ export function CalendarComponent({ className }: { className?: string }) {
     return map;
   }, [reminders.data]);
 
-  // Events for selected date
   const eventsForSelectedDate = React.useMemo(() => {
     if (!date) return [];
     const key = date.toISOString().split("T")[0];
     return eventsByDate[key] || [];
   }, [date, eventsByDate]);
+
+  if (reminders.isLoading)
+    return (
+      <div className="h-full w-full flex justify-center items-center">
+        <LoadingSpinner />
+      </div>
+    );
 
   return (
     <TooltipProvider>
@@ -102,35 +106,49 @@ export function CalendarComponent({ className }: { className?: string }) {
             </div>
           </div>
 
-          {/* Event List Under Calendar */}
-          <div>
-            <h3 className="text-md font-semibold">
-              Events on {date?.toDateString()}:
-            </h3>
-
-            {eventsForSelectedDate.length === 0 ? (
-              <p className="text-sm text-muted-foreground mt-2">No events.</p>
-            ) : (
-              <ul className="mt-3 space-y-3">
-                {eventsForSelectedDate.map((event) => (
-                  <li
-                    key={event.id}
-                    className="p-3 border rounded-md bg-accent text-accent-foreground"
-                  >
-                    <p className="font-medium">{event.text}</p>
-                    <p className="text-sm text-muted-foreground">
-                      {event.time.toLocaleTimeString([], {
-                        hour: "2-digit",
-                        minute: "2-digit",
-                      })}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          <EventList
+            eventsForSelectedDate={eventsForSelectedDate}
+            date={date}
+          />
         </div>
       </ScrollArea>
     </TooltipProvider>
+  );
+}
+
+function EventList({
+  eventsForSelectedDate,
+  date,
+}: {
+  eventsForSelectedDate: ReminderEvent[];
+  date: Date | undefined;
+}) {
+  return (
+    <div>
+      <h3 className="text-md font-semibold">
+        Events on {date?.toDateString()}:
+      </h3>
+
+      {eventsForSelectedDate.length === 0 ? (
+        <p className="text-sm text-muted-foreground mt-2">No events.</p>
+      ) : (
+        <ul className="mt-3 space-y-3">
+          {eventsForSelectedDate.map((event) => (
+            <li
+              key={event.id}
+              className="p-3 border rounded-md bg-accent text-accent-foreground"
+            >
+              <p className="font-medium">{event.text}</p>
+              <p className="text-sm text-muted-foreground">
+                {event.time.toLocaleTimeString([], {
+                  hour: "2-digit",
+                  minute: "2-digit",
+                })}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
   );
 }
