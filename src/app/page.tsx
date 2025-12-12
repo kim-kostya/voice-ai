@@ -1,8 +1,8 @@
 "use client";
 
-import { CalendarPopover } from "@/components/popover/CalendarPopover";
 import { ChatHistoryPopover } from "@/components/popover/ChatHistoryPopover";
 import { DebugPopover } from "@/components/popover/DebugPopover";
+import { RemindersPopover } from "@/components/popover/RemindersPopover";
 import { VoiceModelSettingsPopover } from "@/components/popover/VoiceModelSettingsPopover";
 import { VolumeControlPopover } from "@/components/popover/VolumeControlPopover";
 import { ReminderPushNotificationHandler } from "@/components/ReminderPushNotificationHandler";
@@ -20,7 +20,7 @@ export default function Home() {
         <VoiceModelSettingsPopover />
         <VolumeControlPopover />
         <ChatHistoryPopover />
-        <CalendarPopover />
+        <RemindersPopover />
         {process.env.NODE_ENV === "development" && <DebugPopover />}
         <VoiceTranscriptionHandler />
         <ReminderPushNotificationHandler />

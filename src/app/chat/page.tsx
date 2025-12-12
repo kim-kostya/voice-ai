@@ -10,7 +10,7 @@ import TextChatHandler from "@/components/TextChatHandler";
 import { Button } from "@/components/ui/Button";
 import { TextArea } from "@/components/ui/TextArea";
 import { VoiceTranscriptionHandler } from "@/components/VoiceTranscriptionHandler";
-import { CalendarWidget } from "@/components/widgets/CalendarWidget";
+import { RemindersWidget } from "@/components/widgets/RemindersWidget";
 import { VoiceModelSettingsWidget } from "@/components/widgets/VoiceModelSettingsWidget";
 import { useAgentAudioOutput } from "@/lib/hooks/agent";
 
@@ -27,7 +27,7 @@ export default function Chat() {
         <aside className="w-80 border-l border-border bg-muted/30 p-4 overflow-y-auto">
           <div className="space-y-4">
             <VoiceModelSettingsWidget />
-            <CalendarWidget />
+            <RemindersWidget />
           </div>
         </aside>
       </main>
