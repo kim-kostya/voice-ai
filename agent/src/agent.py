@@ -1,6 +1,7 @@
 import datetime
 import json
 import logging
+import textwrap
 from typing import AsyncIterable, Coroutine, Any
 
 from dotenv import load_dotenv
@@ -240,7 +241,7 @@ async def entrypoint(ctx: JobContext):
       <reminder>
         <time>{req["reminder"]["time"]}</time>
         <text>
-        {req["reminder"]["text"]}
+        {textwrap.indent(req["reminder"]["text"], "  ", lambda line: line != 0)}
         </text>
       </reminder>
       """
