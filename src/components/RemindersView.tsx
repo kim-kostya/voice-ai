@@ -45,7 +45,14 @@ function formatDayHeader(d: Date) {
 }
 
 export function RemindersView({ className }: { className?: string }) {
-  const { data, isLoading, isError } = trpc.reminders.getReminders.useQuery();
+  const { data, isLoading, isError } = trpc.reminders.getReminders.useQuery(
+    undefined,
+    {
+      refetchInterval: 5_000,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+    },
+  );
 
   const [selectedDay, setSelectedDay] = React.useState<Date>(() => new Date());
 
@@ -131,8 +138,8 @@ export function RemindersView({ className }: { className?: string }) {
   );
 
   return (
-    <div className={cn("w-full", className)}>
-      <div className="flex flex-col gap-3 md:flex-row md:gap-6">
+    <div className="w-full">
+      <div className={cn(className)}>
         <div className="shrink-0">
           <Calendar
             mode="single"
@@ -164,7 +171,7 @@ export function RemindersView({ className }: { className?: string }) {
           </div>
 
           <div className="mt-2 rounded-md border bg-card">
-            <ScrollArea className="h-100">
+            <ScrollArea className="max-h-24 h-fit">
               <div className="p-3">
                 {isLoading ? (
                   <div className="text-sm text-muted-foreground">
