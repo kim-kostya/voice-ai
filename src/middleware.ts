@@ -1,5 +1,3 @@
-// middleware.ts (Next.js 13+)
-
 import type { NextRequest } from "next/server";
 import { NextResponse } from "next/server";
 

@@ -1,8 +1,9 @@
 import { auth, currentUser } from "@clerk/nextjs/server";
 import { initTRPC, TRPCError } from "@trpc/server";
+import { count, eq } from "drizzle-orm";
 import superjson from "superjson";
-
-// Adjust this path if needed
+import { db } from "@/server/db";
+import { users } from "@/server/db/schema";
 
 export async function createContext() {
   return {
@@ -21,9 +22,24 @@ const isAuthed = t.middleware(({ next, ctx }) => {
   if (!ctx.auth.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED" });
   }
+
+  db.transaction(async (_) => {
+    const regUserCount = await db
+      .select({ value: count() })
+      .from(users)
+      .where(eq(users.id, ctx.auth.userId as string));
+
+    if (regUserCount[0].value < 1) {
+      await db.insert(users).values({
+        id: ctx.auth.userId as string,
+      });
+    }
+  });
+
   return next({
     ctx: {
       auth: ctx.auth,
+      user: ctx.user,
     },
   });
 });

@@ -9,7 +9,8 @@ import ChatHistory from "@/components/ChatHistory";
 import TextChatHandler from "@/components/TextChatHandler";
 import { Button } from "@/components/ui/Button";
 import { TextArea } from "@/components/ui/TextArea";
-import { CalendarWidget } from "@/components/widgets/CalendarWidget";
+import { VoiceTranscriptionHandler } from "@/components/VoiceTranscriptionHandler";
+import { RemindersWidget } from "@/components/widgets/RemindersWidget";
 import { VoiceModelSettingsWidget } from "@/components/widgets/VoiceModelSettingsWidget";
 import { useAgentAudioOutput } from "@/lib/hooks/agent";
 
@@ -26,11 +27,12 @@ export default function Chat() {
         <aside className="w-80 border-l border-border bg-muted/30 p-4 overflow-y-auto">
           <div className="space-y-4">
             <VoiceModelSettingsWidget />
-            <CalendarWidget />
+            <RemindersWidget />
           </div>
         </aside>
       </main>
       <TextChatHandler />
+      <VoiceTranscriptionHandler />
     </>
   );
 }
@@ -77,7 +79,7 @@ function ChatInput() {
           <Button
             onClick={handleSendMessage}
             disabled={!inputValue.trim()}
-            className="bg-teal-600 hover:bg-teal-700 flex-shrink-0"
+            className="bg-teal-600 hover:bg-teal-700 shrink-0"
             size="icon"
           >
             <Send className="w-4 h-4" />

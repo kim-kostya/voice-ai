@@ -51,8 +51,8 @@ export function useAgentRpcMethod<T extends ZodTypeAny>(
     roomContext.registerRpcMethod(rpcMethodName, async (data) => {
       try {
         console.log(`[LiveKit RPC] ${rpcMethodName} called with data:`, data);
-        const rawRequest = SuperJSON.parse(data.payload);
-        const request = inputSchema.safeParse(rawRequest);
+        const rawRequest = JSON.parse(data.payload);
+        const request = inputSchema.parse(rawRequest);
         return SuperJSON.stringify(await callback(request));
         // biome-ignore lint/suspicious/noExplicitAny: catches all errors that might occur
       } catch (error: any) {
@@ -85,7 +85,7 @@ export function useAgentRemoteRpcMethod<
   outputSchema: TOutputSchema,
 ): (input: z.infer<TInputSchema>) => Promise<z.infer<TOutputSchema>> {
   const roomContext = useRoomContext();
-  const { agent } = useVoiceAssistant();
+  const { agent } = useLiveKit();
 
   // biome-ignore lint/correctness/useExhaustiveDependencies: no need to recalculate on roomContext or outputSchema change
   return useCallback<z.infer<TOutputSchema>>(
@@ -135,6 +135,15 @@ export interface GeoLocationRPCMessage {
 export interface CurrentVoiceRPCMessage {
   type: "current_voice";
   voiceId: string;
+}
+
+export interface ReminderNotificationRPCMessage {
+  type: "reminder_notification";
+  reminder: {
+    id: number;
+    time: Date;
+    text: string;
+  };
 }
 
 export interface AgentRPCError {

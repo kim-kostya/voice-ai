@@ -5,7 +5,7 @@ const redis = Redis.fromEnv();
 
 export const ratelimit = new Ratelimit({
   redis,
-  limiter: Ratelimit.slidingWindow(60, "10 m"),
+  limiter: Ratelimit.slidingWindow(1000, "10 m"),
   analytics: true,
   prefix: "rl:ip:",
 });

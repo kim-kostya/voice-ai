@@ -1,4 +1,4 @@
-import type { Room } from "livekit-client";
+import type { RemoteParticipant, Room } from "livekit-client";
 import { create } from "zustand";
 
 export type RoomState = "connecting" | "connected" | "disconnected" | "failed";
@@ -19,6 +19,7 @@ export interface ChatMessage {
 
 export type LiveKitState = {
   room: Room | undefined;
+  agent: RemoteParticipant | undefined;
   roomState: RoomState;
   agentState: AgentState;
   volume: number;
@@ -26,6 +27,7 @@ export type LiveKitState = {
   isAudioEnabled: boolean;
   chatMessages: ChatMessage[];
   setRoom: (room: Room) => void;
+  setAgent: (agent: RemoteParticipant) => void;
   setRoomState: (state: RoomState) => void;
   setAgentState: (state: AgentState) => void;
   setVoiceId: (voiceId: string | undefined) => void;
@@ -36,6 +38,7 @@ export type LiveKitState = {
 
 export const useLiveKit = create<LiveKitState>((set) => ({
   room: undefined,
+  agent: undefined,
   roomState: "disconnected",
   agentState: "disconnected",
   voiceId: undefined,
@@ -43,6 +46,7 @@ export const useLiveKit = create<LiveKitState>((set) => ({
   isAudioEnabled: false,
   chatMessages: [],
   setRoom: (room) => set({ room }),
+  setAgent: (agent) => set({ agent }),
   setRoomState: (state) => set({ roomState: state }),
   setAgentState: (state) => set({ agentState: state }),
   setVoiceId: (voiceId) => set({ voiceId }),
