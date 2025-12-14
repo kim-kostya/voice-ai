@@ -240,9 +240,6 @@ class ResponaAgent(Agent):
       current_day = now.weekday()
 
       days_ahead = target_day - current_day
-      if days_ahead <= 0:
-        days_ahead += 7
-
       next_date = now + datetime.timedelta(days=days_ahead)
 
       return json.dumps({
