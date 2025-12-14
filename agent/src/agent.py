@@ -23,7 +23,7 @@ from livekit.rtc import RpcInvocationData
 
 from memory import init_memory
 from rpc import AgentRPCClient, parse_rpc_message, serialize_rpc_message
-from userdata import ResponaUserData
+from userdata import ResponaUserData, Reminder
 from weather import get_coords_by_location, get_current_weather_by_coords
 
 load_dotenv()
@@ -32,7 +32,9 @@ logger = logging.getLogger("agent")
 
 
 class ResponaAgent(Agent):
-  def __init__(self, voice_id: str):
+  initial_reminder: Reminder | None = None
+
+  def __init__(self, voice_id: str, initial_reminder: Reminder | None = None):
     super().__init__(
       instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner and try to be more friendly.",
       stt=assemblyai.STT(),
@@ -187,7 +189,19 @@ class ResponaAgent(Agent):
       return "Unable to remove reminder"
 
   async def on_enter(self) -> None:
-    await self.session.say("Hello, I am Respona. How can I help you today?")
+    if self.initial_reminder is not None:
+      await self.session.generate_reply(
+        instructions="User's reminder time was reached. Notify user about reminder.",
+        user_input=f"""
+        <reminder>
+          <time>{self.initial_reminder.time}</time>
+          <text>
+          {textwrap.indent(self.initial_reminder.text, "  ", lambda line: line != 0)}
+          </text>
+        </reminder>
+        """)
+    else:
+      await self.session.say("Hello, I am Respona. How can I help you today?")
 
 
 def prewarm(proc: JobProcess):
@@ -203,7 +217,8 @@ async def entrypoint(ctx: JobContext):
   session = AgentSession[ResponaUserData](
     userdata=ResponaUserData(
       user_id=remote_participant.identity,
-      timezone_offset=datetime.timezone(offset=datetime.timedelta(minutes=int(remote_participant.attributes["timezone_offset"]))),
+      timezone_offset=datetime.timezone(
+        offset=datetime.timedelta(minutes=int(remote_participant.attributes["timezone_offset"]))),
       voice_id=remote_participant.attributes["voice_id"]
     ),
     vad=ctx.proc.userdata["vad_model"],
