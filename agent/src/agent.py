@@ -264,9 +264,21 @@ async def entrypoint(ctx: JobContext):
 
     return serialize_rpc_message({"type": "success"})
 
+  initial_reminder_raw = json.dumps(remote_participant.attributes["initial_reminder"]) \
+    if "initial_reminder" in remote_participant.attributes \
+    else None
+
+  initial_reminder = None
+  if "text" and "time" in initial_reminder_raw:
+    initial_reminder = Reminder(
+      text=initial_reminder_raw["text"],
+      time=initial_reminder_raw["time"]
+    )
+
   await session.start(
     agent=ResponaAgent(
-      voice_id=remote_participant.attributes["voice_id"]
+      voice_id=remote_participant.attributes["voice_id"],
+      initial_reminder=initial_reminder
     ),
     room=ctx.room,
     room_input_options=RoomInputOptions(
