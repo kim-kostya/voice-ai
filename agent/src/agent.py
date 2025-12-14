@@ -159,6 +159,7 @@ class ResponaAgent(Agent):
 
   @function_tool(description="""
   Add reminder to calendar
+  This method already takes care of timezone offset, so you don't need to worry about it.
   ALWAYS SET REMINDER TIME 10 MINUTES BEFORE EVENT TIME
   
   @param reminder_text: Reminder text
