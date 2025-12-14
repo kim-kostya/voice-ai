@@ -169,6 +169,7 @@ class ResponaAgent(Agent):
   Add reminder to calendar
   This method already takes care of timezone offset, so you don't need to worry about it.
   If user said day of the week, use get_closest_date_from_day_of_week to calculate the date.
+  If the day of the week is current day and time is already passed just set the reminder in next week.
   
   @param reminder_text: Reminder text
   @param reminder_time: Reminder time in format (YYYY-MM-DD hh:mm:ss) in user's local timezone
