@@ -168,6 +168,7 @@ class ResponaAgent(Agent):
   @function_tool(description="""
   Add reminder to calendar
   This method already takes care of timezone offset, so you don't need to worry about it.
+  If user said day of the week, use get_closest_date_from_day_of_week to calculate the date.
   
   @param reminder_text: Reminder text
   @param reminder_time: Reminder time in format (YYYY-MM-DD hh:mm:ss) in user's local timezone
@@ -232,8 +233,7 @@ class ResponaAgent(Agent):
 
       day_of_week_lower = day_of_week.lower()
       if day_of_week_lower not in days:
-        return json.dumps({
-                            "error": "Invalid day of week. Please use Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, or Sunday"})
+        return json.dumps({"error": "Invalid day of week. Please use Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, or Sunday"})
 
       target_day = days[day_of_week_lower]
       now = datetime.datetime.now(self.session.userdata.timezone)
