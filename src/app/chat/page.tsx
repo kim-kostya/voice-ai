@@ -8,14 +8,27 @@ import { useState } from "react";
 import ChatHistory from "@/components/ChatHistory";
 import TextChatHandler from "@/components/TextChatHandler";
 import { Button } from "@/components/ui/Button";
+import { LoadingSpinner } from "@/components/ui/LoadingSpinner";
 import { TextArea } from "@/components/ui/TextArea";
 import { VoiceTranscriptionHandler } from "@/components/VoiceTranscriptionHandler";
 import { RemindersWidget } from "@/components/widgets/RemindersWidget";
 import { VoiceModelSettingsWidget } from "@/components/widgets/VoiceModelSettingsWidget";
 import { useAgentAudioOutput } from "@/lib/hooks/agent";
+import { useLiveKit } from "@/lib/stores/livekit";
 
 export default function Chat() {
   useAgentAudioOutput(false);
+  const { agentState } = useLiveKit();
+
+  if (agentState === "connecting" || agentState === "disconnected")
+    return (
+      <main className="grow h-100">
+        <div className="h-full flex justify-center items-center flex-col text-center gap-3">
+          <p className="text-xl font-medium">Connecting...</p>
+          <LoadingSpinner className="w-32 h-32" />
+        </div>
+      </main>
+    );
 
   return (
     <>
