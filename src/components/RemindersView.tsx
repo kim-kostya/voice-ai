@@ -171,8 +171,8 @@ export function RemindersView({ className }: { className?: string }) {
           </div>
 
           <div className="mt-2 rounded-md border bg-card">
-            <ScrollArea className="max-h-24 h-fit">
-              <div className="p-3">
+            <ScrollArea className="max-h-24 overflow-y-auto w-full">
+              <div className="p-3 h-fit w-full max-w-60">
                 {isLoading ? (
                   <div className="text-sm text-muted-foreground">
                     Loading reminders…
