@@ -58,6 +58,7 @@ class ResponaAgent(Agent):
   ):
     chat_ctx.add_message(role="assistant", content=f"""
     Current time in local timezone: {datetime.datetime.now(self.session.userdata.timezone_offset).isoformat()}
+    Current day of week: {datetime.datetime.now(self.session.userdata.timezone_offset).strftime("%A")}
     """)
     await self.update_chat_ctx(chat_ctx)
 
@@ -149,7 +150,8 @@ class ResponaAgent(Agent):
       return "Unable to get reminders"
 
   @function_tool(description="""
-  Add reminder to calendar
+  Add reminder to calendar (don't check user location time already given in correct timezone)
+  ALWAYS SET REMINDER TIME 10 MINUTES BEFORE EVENT TIME
   
   @param reminder_text: Reminder text
   @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss) of local timezone
@@ -161,9 +163,14 @@ class ResponaAgent(Agent):
       participant_identity = next(iter(room.remote_participants))
       rpc_client = AgentRPCClient(room, participant_identity)
 
+      timezone: datetime.timezone = self.session.userdata.timezone_offset
+
+      offset_in_hours = timezone.utcoffset(None).total_seconds() / 3600
+      offset = offset_in_hours < 0 and f"-{abs(offset_in_hours):02d}" or f"+{offset_in_hours:02d}"
+
       await rpc_client.add_reminder({
         "text": reminder_text,
-        "time": datetime.datetime.fromisoformat(reminder_time).astimezone(datetime.timezone.utc).isoformat()
+        "time": datetime.datetime.fromisoformat(f"{reminder_time}{offset}").astimezone(datetime.timezone.utc).isoformat()
       })
       return "Reminder added successfully"
     except Exception as e:
