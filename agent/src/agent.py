@@ -115,6 +115,10 @@ class ResponaAgent(Agent):
     try:
       context.disallow_interruptions()
       coords = get_coords_by_location(location)
+
+      if "latitude" not in coords or "longitude" not in coords:
+        return json.dumps({"error": "location_unavailable"})
+
       return json.dumps({
         "latitude": coords[0],
         "longitude": coords[1]
