@@ -185,7 +185,7 @@ class ResponaAgent(Agent):
 
       timezone: datetime.timezone = self.session.userdata.timezone_offset
 
-      offset_in_hours = timezone.utcoffset(None).total_seconds() / 3600
+      offset_in_hours = int(timezone.utcoffset(None).total_seconds()) / 3600
       offset = offset_in_hours < 0 and f"-{abs(offset_in_hours):02d}" or f"+{offset_in_hours:02d}"
 
       await rpc_client.add_reminder({
