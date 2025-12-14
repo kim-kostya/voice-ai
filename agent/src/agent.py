@@ -276,7 +276,7 @@ async def entrypoint(ctx: JobContext):
     else None
 
   initial_reminder = None
-  if "text" and "time" in initial_reminder_raw:
+  if "text" and "time" in initial_reminder_raw or initial_reminder_raw is not None:
     initial_reminder = Reminder(
       text=initial_reminder_raw["text"],
       time=initial_reminder_raw["time"]
