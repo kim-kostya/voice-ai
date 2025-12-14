@@ -39,14 +39,12 @@ class ResponaAgent(Agent):
       instructions="""
       You are in-development helpful AI agent called Respona. Talk in a light but formal manner and try to be more friendly.
       
-      <notes>
-      YOU DON'T NEED TO GET CURRENT USER TIMEZONE WHEN YOU NEED TO ADD REMINDER TO CALENDAR, PLEASE STOP QUERYING IT
-      </notes>
+      No need to specify timezone offset when adding reminder to calendar, because it's already taken care of by the tool.
       """,
       stt=assemblyai.STT(),
       llm=openai.llm.LLM(
         base_url="https://openrouter.ai/api/v1",
-        model="openai/gpt-5.1-nano"
+        model="openai/gpt-4.1-nano"
       ),
       tts=elevenlabs.TTS(
         voice_id=voice_id,
@@ -63,8 +61,8 @@ class ResponaAgent(Agent):
     | Coroutine[Any, Any, None]
   ):
     chat_ctx.add_message(role="assistant", content=f"""
-    Current time in user's local timezone: {datetime.datetime.now(self.session.userdata.timezone_offset).isoformat()}
-    Current day of week: {datetime.datetime.now(self.session.userdata.timezone_offset).strftime("%A")}
+    Current time in user's local timezone: {datetime.datetime.now(self.session.userdata.timezone).isoformat()}
+    Current day of week: {datetime.datetime.now(self.session.userdata.timezone).strftime("%A")}
     """)
     await self.update_chat_ctx(chat_ctx)
 
@@ -170,27 +168,26 @@ class ResponaAgent(Agent):
   @function_tool(description="""
   Add reminder to calendar
   This method already takes care of timezone offset, so you don't need to worry about it.
-  ALWAYS SET REMINDER TIME 10 MINUTES BEFORE EVENT TIME
   
   @param reminder_text: Reminder text
-  @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss) based on user's local timezone
+  @param reminder_time: Reminder time in format (YYYY-MM-DD hh:mm:ss) in user's local timezone
   """)
   async def add_reminder(self, context: RunContext, reminder_text: str, reminder_time: str):
-    print("add_reminder called")
     try:
       context.disallow_interruptions()
       room = get_job_context().room
       participant_identity = next(iter(room.remote_participants))
       rpc_client = AgentRPCClient(room, participant_identity)
 
-      timezone: datetime.timezone = self.session.userdata.timezone_offset
+      print(f"Adding reminder for {reminder_time}")
 
-      offset_in_hours = int(timezone.utcoffset(None).total_seconds()) / 3600
-      offset = offset_in_hours < 0 and f"-{abs(offset_in_hours):02d}" or f"+{offset_in_hours:02d}"
+      timezone: datetime.timezone = self.session.userdata.timezone
+      reminder_datetime = datetime.datetime.strptime(reminder_time, "%Y-%m-%d %H:%M:%S")
+      reminder_datetime = reminder_datetime.replace(tzinfo=timezone)
 
       await rpc_client.add_reminder({
         "text": reminder_text,
-        "time": datetime.datetime.fromisoformat(f"{reminder_time}{offset}").astimezone(datetime.timezone.utc).isoformat()
+        "time": reminder_datetime.astimezone(datetime.timezone.utc).isoformat()
       })
       return "Reminder added successfully"
     except Exception as e:
@@ -245,7 +242,7 @@ async def entrypoint(ctx: JobContext):
   session = AgentSession[ResponaUserData](
     userdata=ResponaUserData(
       user_id=remote_participant.identity,
-      timezone_offset=datetime.timezone(
+      timezone=datetime.timezone(
         offset=datetime.timedelta(minutes=int(remote_participant.attributes["timezone_offset"]))),
       voice_id=remote_participant.attributes["voice_id"]
     ),

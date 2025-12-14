@@ -10,5 +10,5 @@ class Reminder:
 @dataclass()
 class ResponaUserData:
   user_id: str
-  timezone_offset: datetime.timezone
+  timezone: datetime.timezone
   voice_id: str
