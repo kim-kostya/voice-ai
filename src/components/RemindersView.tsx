@@ -57,6 +57,7 @@ export function RemindersView({ className }: { className?: string }) {
   const remindersByDay = React.useMemo(() => {
     const map = new Map<string, Reminder[]>();
     for (const r of data ?? []) {
+      console.log(r);
       const key = toDayKey(r.time);
       const list = map.get(key) ?? [];
       list.push(r);
