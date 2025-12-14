@@ -150,7 +150,7 @@ class ResponaAgent(Agent):
       return "Unable to get reminders"
 
   @function_tool(description="""
-  Add reminder to calendar (don't check user location time already given in correct timezone)
+  Add reminder to calendar
   ALWAYS SET REMINDER TIME 10 MINUTES BEFORE EVENT TIME
   
   @param reminder_text: Reminder text
