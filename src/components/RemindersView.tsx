@@ -113,7 +113,7 @@ export function RemindersView({ className }: { className?: string }) {
           </TooltipTrigger>
 
           {showDot ? (
-            <TooltipContent side="top" sideOffset={6} className="max-w-[260px]">
+            <TooltipContent side="top" sideOffset={6} className="max-w-65">
               <div className="flex flex-col gap-1">
                 <div className="font-medium">{formatDayHeader(date)}</div>
                 <div className="opacity-90">
