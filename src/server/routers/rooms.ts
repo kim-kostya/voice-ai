@@ -1,9 +1,9 @@
-import { eq } from "drizzle-orm";
+import { and, eq } from "drizzle-orm";
 import { AccessToken } from "livekit-server-sdk";
 import { z } from "zod";
 import { redis } from "@/lib/redis";
 import { db } from "@/server/db";
-import { users } from "@/server/db/schema";
+import { reminders, users } from "@/server/db/schema";
 import {
   liveKitApiKey,
   liveKitApiSecret,
@@ -18,6 +18,7 @@ export const roomsRouter = createTRPCRouter({
       z.object({
         roomId: z.string().uuid(),
         timezoneOffset: z.number().int(),
+        initialReminderId: z.number().int().positive().optional(),
       }),
     )
     .query(async ({ ctx, input }) => {
@@ -33,16 +34,38 @@ export const roomsRouter = createTRPCRouter({
         const currentVoiceId =
           currentVoiceIdResult[0]?.model ?? DEFAULT_VOICE_ID;
 
+        // biome-ignore lint/suspicious/noExplicitAny: just a string-to-string map
+        const attributes: any = {
+          timezone_offset: (input.timezoneOffset ?? 0).toString(),
+          voice_id: currentVoiceId,
+        };
+
+        if (input.initialReminderId) {
+          const remindersResult = await db
+            .select()
+            .from(reminders)
+            .where(
+              and(
+                eq(reminders.id, input.initialReminderId),
+                eq(reminders.authorId, ctx.auth.userId),
+              ),
+            );
+
+          if (remindersResult.length > 0) {
+            attributes["initial_reminder_id"] = JSON.stringify({
+              text: remindersResult[0].text,
+              time: remindersResult[0].time,
+            });
+          }
+        }
+
         const accessTokenConfig = new AccessToken(
           liveKitApiKey,
           liveKitApiSecret,
           {
             identity: ctx.auth.userId,
             name: ctx.user?.fullName ?? "user",
-            attributes: {
-              timezone_offset: (input.timezoneOffset ?? 0).toString(),
-              voice_id: currentVoiceId,
-            },
+            attributes: attributes,
           },
         );
 
