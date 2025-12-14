@@ -57,7 +57,7 @@ class ResponaAgent(Agent):
     | Coroutine[Any, Any, None]
   ):
     chat_ctx.add_message(role="assistant", content=f"""
-    Current time in local timezone: {datetime.datetime.now(self.session.userdata.timezone_offset).isoformat()}
+    Current time in user's local timezone: {datetime.datetime.now(self.session.userdata.timezone_offset).isoformat()}
     Current day of week: {datetime.datetime.now(self.session.userdata.timezone_offset).strftime("%A")}
     """)
     await self.update_chat_ctx(chat_ctx)
@@ -158,7 +158,7 @@ class ResponaAgent(Agent):
   ALWAYS SET REMINDER TIME 10 MINUTES BEFORE EVENT TIME
   
   @param reminder_text: Reminder text
-  @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss)
+  @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss) based on user's local timezone
   """)
   async def add_reminder(self, context: RunContext, reminder_text: str, reminder_time: str):
     print("add_reminder called")
