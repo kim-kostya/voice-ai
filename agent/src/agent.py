@@ -36,7 +36,13 @@ class ResponaAgent(Agent):
 
   def __init__(self, voice_id: str, initial_reminder: Reminder | None = None):
     super().__init__(
-      instructions="You are in-development helpful AI agent called Respona. Talk in a light but formal manner and try to be more friendly.",
+      instructions="""
+      You are in-development helpful AI agent called Respona. Talk in a light but formal manner and try to be more friendly.
+      
+      <notes>
+      YOU DON'T NEED TO GET CURRENT USER TIMEZONE WHEN YOU NEED TO ADD REMINDER TO CALENDAR, PLEASE STOP QUERYING IT
+      </notes>
+      """,
       stt=assemblyai.STT(),
       llm=openai.llm.LLM(
         base_url="https://openrouter.ai/api/v1",
@@ -105,7 +111,11 @@ class ResponaAgent(Agent):
       print(e)
       return "Unable to get location"
 
-  @function_tool(description="Get location coordinates based on location name")
+  @function_tool(description="""
+  Get location coordinates based on location name
+  
+  @param location: Location name or address
+  """)
   async def get_coords_by_location(
     self,
     context: RunContext,
