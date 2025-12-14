@@ -1,7 +1,5 @@
 "use client";
 
-"use client";
-
 import * as React from "react";
 import type { DayButton } from "react-day-picker";
 import { Calendar, CalendarDayButton } from "@/components/ui/calendar";
@@ -113,7 +111,7 @@ export function RemindersView({ className }: { className?: string }) {
           </TooltipTrigger>
 
           {showDot ? (
-            <TooltipContent side="top" sideOffset={6} className="max-w-[260px]">
+            <TooltipContent side="top" sideOffset={6} className="max-w-65">
               <div className="flex flex-col gap-1">
                 <div className="font-medium">{formatDayHeader(date)}</div>
                 <div className="opacity-90">
@@ -171,8 +169,8 @@ export function RemindersView({ className }: { className?: string }) {
           </div>
 
           <div className="mt-2 rounded-md border bg-card">
-            <ScrollArea className="max-h-24 h-fit">
-              <div className="p-3">
+            <ScrollArea className="max-h-24 overflow-y-auto w-full">
+              <div className="p-3 h-fit w-full max-w-60">
                 {isLoading ? (
                   <div className="text-sm text-muted-foreground">
                     Loading reminders…

@@ -6,6 +6,7 @@ import {
   useVoiceAssistant,
 } from "@livekit/components-react";
 import { Room, RoomEvent } from "livekit-client";
+import { useSearchParams } from "next/navigation";
 import { type ReactNode, useEffect, useState } from "react";
 import { z } from "zod";
 import { useAgentRpcMethod } from "@/lib/hooks/agent";
@@ -18,6 +19,7 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
   const { room, volume, roomState, setRoom, setRoomState, setVoiceId } =
     useLiveKit();
   const [roomId, setRoomId] = useState<string | undefined>(undefined);
+  const searchParams = useSearchParams();
 
   useEffect(() => {
     console.log("[LiveKit] Initializing room");
@@ -60,11 +62,18 @@ export function LiveKitRoom({ children }: { children: ReactNode }): ReactNode {
         setVoiceId(voiceId);
         console.log("[TRPC] Current voice ID retrieved:", voiceId);
 
+        const reminderId = searchParams.get("reminder_id");
+
+        if (reminderId) {
+          console.log("[TRPC] Setting initial reminder ID to:", reminderId);
+        }
+
         console.log("[LiveKit] Attempting to connect to room");
         setRoomState("connecting");
         const roomData = await trpcUtils.rooms.getRoomData.fetch({
           roomId: roomId as string,
-          timezoneOffset: new Date().getTimezoneOffset(),
+          timezoneOffset: -new Date().getTimezoneOffset(),
+          initialReminderId: reminderId ? parseInt(reminderId, 10) : undefined,
         });
         await room.connect(roomData.wsUrl, roomData.token);
       } catch (error) {
