@@ -23,4 +23,11 @@ def get_coords_by_location(query: str) -> tuple[float, float]:
   api_key = os.getenv("OPENCAGE_API_KEY")
   geocoder = OpenCageGeocode(api_key)
   results = geocoder.geocode(query)
+
+  if len(results) == 0:
+    raise Exception("Location not found")
+
+  if "latitude" not in results[0] or "longitude" not in results[0]:
+    raise Exception("Location not found")
+
   return results[0].latitude, results[0].longitude
