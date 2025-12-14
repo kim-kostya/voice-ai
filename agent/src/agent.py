@@ -88,6 +88,7 @@ class ResponaAgent(Agent):
     self,
     context: RunContext
   ):
+    print("get_location called")
     try:
       context.disallow_interruptions()
       room = get_job_context().room
@@ -110,6 +111,7 @@ class ResponaAgent(Agent):
     context: RunContext,
     location: str
   ):
+    print("get_coords_by_location called")
     try:
       context.disallow_interruptions()
       coords = get_coords_by_location(location)
@@ -128,6 +130,7 @@ class ResponaAgent(Agent):
     latitude: float,
     longitude: float
   ):
+    print("get_weather called")
     try:
       weather = get_current_weather_by_coords(latitude, longitude)
       return json.dumps(weather)
@@ -137,6 +140,7 @@ class ResponaAgent(Agent):
 
   @function_tool(description="Get list of reminders or calendar events")
   async def get_reminders(self, context: RunContext):
+    print("get_reminders called")
     try:
       context.disallow_interruptions()
       room = get_job_context().room
@@ -157,6 +161,7 @@ class ResponaAgent(Agent):
   @param reminder_time: Reminder time in ISO 8601 format (YYYY-MM-DDThh:mm:ss) of local timezone
   """)
   async def add_reminder(self, context: RunContext, reminder_text: str, reminder_time: str):
+    print("add_reminder called")
     try:
       context.disallow_interruptions()
       room = get_job_context().room
@@ -183,6 +188,7 @@ class ResponaAgent(Agent):
   @param reminder_id: Reminder id to remove (to get reminder id, use get_reminders function)
   """)
   async def remove_reminder(self, context: RunContext, reminder_id: str):
+    print("remove_reminder called")
     try:
       context.disallow_interruptions()
       room = get_job_context().room
