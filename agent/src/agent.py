@@ -61,7 +61,7 @@ class ResponaAgent(Agent):
     | Coroutine[Any, Any, None]
   ):
     chat_ctx.add_message(role="assistant", content=f"""
-    Current time in user's local timezone: {datetime.datetime.now(self.session.userdata.timezone).isoformat()}
+    Current time in user's local timezone (YYYY-MM-DD hh:mm:ss): {datetime.datetime.now(self.session.userdata.timezone).strftime("%Y-%m-%D %H:%M:%S")}
     Current day of week: {datetime.datetime.now(self.session.userdata.timezone).strftime("%A")}
     """)
     await self.update_chat_ctx(chat_ctx)
@@ -185,6 +185,8 @@ class ResponaAgent(Agent):
       reminder_datetime = datetime.datetime.strptime(reminder_time, "%Y-%m-%d %H:%M:%S")
       reminder_datetime = reminder_datetime.replace(tzinfo=timezone)
 
+      print(f"Converted reminder time to {reminder_datetime.isoformat()}")
+
       await rpc_client.add_reminder({
         "text": reminder_text,
         "time": reminder_datetime.astimezone(datetime.timezone.utc).isoformat()
@@ -212,6 +214,44 @@ class ResponaAgent(Agent):
     except Exception as e:
       print(e)
       return "Unable to remove reminder"
+
+  @function_tool(description="""
+  Find the closest date for a specific day of the week from today
+
+  @param day_of_week: Day of the week (e.g., "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday")
+  """)
+  async def get_closest_date_from_day_of_week(self, context: RunContext, day_of_week: str):
+    print(f"get_closest_date_from_day_of_week called with {day_of_week}")
+    try:
+      context.disallow_interruptions()
+
+      days = {
+        "monday": 0, "tuesday": 1, "wednesday": 2, "thursday": 3,
+        "friday": 4, "saturday": 5, "sunday": 6
+      }
+
+      day_of_week_lower = day_of_week.lower()
+      if day_of_week_lower not in days:
+        return json.dumps({
+                            "error": "Invalid day of week. Please use Monday, Tuesday, Wednesday, Thursday, Friday, Saturday, or Sunday"})
+
+      target_day = days[day_of_week_lower]
+      now = datetime.datetime.now(self.session.userdata.timezone)
+      current_day = now.weekday()
+
+      days_ahead = target_day - current_day
+      if days_ahead <= 0:
+        days_ahead += 7
+
+      next_date = now + datetime.timedelta(days=days_ahead)
+
+      return json.dumps({
+        "day_of_week": day_of_week,
+        "date": next_date.strftime("%Y-%m-%d")
+      })
+    except Exception as e:
+      print(e)
+      return json.dumps({"error": "Unable to calculate closest date"})
 
   async def on_enter(self) -> None:
     if self.initial_reminder is not None:
