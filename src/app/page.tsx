@@ -21,7 +21,8 @@ export default function Home() {
         <VolumeControlPopover />
         <ChatHistoryPopover />
         <RemindersPopover />
-        {process.env.NODE_ENV === "development" && <DebugPopover />}
+        {/*{process.env.NODE_ENV === "development" && <DebugPopover />}*/}
+        <DebugPopover />
         <VoiceTranscriptionHandler />
         <ReminderPushNotificationHandler />
       </div>
