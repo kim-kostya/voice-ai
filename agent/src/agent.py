@@ -316,7 +316,7 @@ async def entrypoint(ctx: JobContext):
 
     await session.interrupt(force=True)
     await session.generate_reply(
-      instructions="User's reminder time was reached. Notify user about reminder.",
+      instructions="User set reminder before and time of reminder has been reached. Remind user about reminder. Focus on content of reminder and don't repeat reminder time.",
       user_input=f"""
       <reminder>
         <time>{req["reminder"]["time"]}</time>
