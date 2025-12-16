@@ -186,7 +186,8 @@ class ResponaAgent(Agent):
       timezone: datetime.timezone = self.session.userdata.timezone
       reminder_datetime = datetime.datetime.strptime(reminder_time, "%Y-%m-%d %H:%M:%S")
       reminder_datetime = reminder_datetime.replace(tzinfo=timezone)
-      reminder_datetime = reminder_datetime + datetime.timedelta(minutes=-10)
+      if (reminder_datetime - datetime.datetime.now(timezone)).total_seconds() >= datetime.timedelta(hours=10).total_seconds():
+        reminder_datetime = reminder_datetime + datetime.timedelta(minutes=-5)
 
       print(f"Converted reminder time to {reminder_datetime.isoformat()}")
 
