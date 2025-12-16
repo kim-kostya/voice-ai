@@ -61,7 +61,7 @@ class ResponaAgent(Agent):
     | Coroutine[Any, Any, None]
   ):
     chat_ctx.add_message(role="assistant", content=f"""
-    Current time in user's local timezone (YYYY-MM-DD hh:mm:ss): {datetime.datetime.now(self.session.userdata.timezone).strftime("%Y-%m-%D %H:%M:%S")}
+    Current time in user's local timezone (YYYY-MM-DD hh:mm:ss): {datetime.datetime.now(self.session.userdata.timezone).strftime("%Y-%m-%d %H:%M:%S")}
     Current day of week: {datetime.datetime.now(self.session.userdata.timezone).strftime("%A")}
     """)
     await self.update_chat_ctx(chat_ctx)
