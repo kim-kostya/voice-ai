@@ -30,7 +30,7 @@ export default function ChatHistory({
   }
 
   return (
-    <ScrollArea className="flex-1 px-4 py-6 h-100" ref={scrollRef}>
+    <ScrollArea className="flex-1 px-4 py-6 h-100 max-h-full" ref={scrollRef}>
       <div className="max-w-3xl mx-auto space-y-6">
         {visibleChatMessages.map((message: ChatMessage) => (
           <div
@@ -38,7 +38,7 @@ export default function ChatHistory({
             className={`flex gap-3 ${message.from === "user" ? "justify-end" : "justify-start"}`}
           >
             {message.from === "agent" && (
-              <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 bg-teal-600 rounded-full flex items-center justify-center shrink-0">
                 <div className="w-4 h-4 border-2 border-white rounded-sm" />
               </div>
             )}
@@ -58,7 +58,7 @@ export default function ChatHistory({
               </span>
             </div>
             {message.from === "user" && (
-              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center flex-shrink-0">
+              <div className="w-8 h-8 bg-secondary rounded-full flex items-center justify-center shrink-0">
                 <span className="text-sm font-semibold">U</span>
               </div>
             )}
